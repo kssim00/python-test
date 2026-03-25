@@ -14,15 +14,14 @@
         html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: var(--vscode-bg); color: var(--vscode-text); font-family: 'Pretendard', sans-serif; }
         .app-wrapper { display: none; height: 100vh; width: 100vw; overflow: hidden; }
         
+        /* 오버레이 */
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1e1e1e; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
         .spinner { width: 40px; height: 40px; border: 4px solid #333; border-top: 4px solid var(--vscode-accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* 관리자 모달 */
         #pw-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; }
         .pw-box { background: #252526; padding: 30px; border-radius: 12px; border: 1px solid #444; width: 300px; text-align: center; }
 
-        /* 레이아웃 */
         .activity-bar { width: 50px; background: #333; display: flex; flex-direction: column; align-items: center; padding: 20px 0; justify-content: space-between; flex-shrink: 0; }
         .explorer { width: 280px; background: var(--vscode-side); border-right: 1px solid #333; display: flex; flex-direction: column; flex-shrink: 0; }
         .main-content { flex: 1; display: flex; min-width: 0; }
@@ -42,28 +41,25 @@
         /* 아코디언 메뉴 */
         .main-cat-header { padding: 12px 15px; font-size: 12px; font-weight: bold; color: #fff; background: #37373d; cursor: pointer; border-bottom: 1px solid #222; }
         .sub-cat-header { padding: 10px 15px 10px 30px; font-size: 12px; color: #999; background: #2d2d2d; cursor: pointer; border-bottom: 1px solid #222; }
-        .prob-item { padding: 8px 15px 8px 50px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #aaa; border-bottom: 1px solid #282828; }
+        .prob-item { padding: 8px 15px 8px 50px; cursor: pointer; font-size: 13px; color: #aaa; border-bottom: 1px solid #282828; }
         .prob-item.active { background: #37373d; color: white; border-left: 3px solid var(--vscode-accent); }
         .prob-item.solved { color: #28a745; font-weight: bold; }
 
-        /* 관리자 패널 정렬용 */
+        /* 관리자 패널 */
         .floating-panel { display: none; position: fixed; top: 30px; left: 65px; right: 35px; bottom: 35px; background: #252526; border: 1px solid #444; border-radius: 12px; z-index: 1000; padding: 25px; overflow-y: auto; box-shadow: 0 10px 50px rgba(0,0,0,0.8); }
         .master-table { width: 100%; border-collapse: collapse; color: #ddd; font-size: 12px; }
-        .master-table th, .master-table td { padding: 8px; border: 1px solid #444; text-align: center; }
-        .btn-mini { padding: 5px 8px; border-radius: 3px; border: none; cursor: pointer; font-size: 11px; color: white; margin: 0 2px; }
+        .master-table th, .master-table td { padding: 10px; border: 1px solid #444; text-align: center; }
+        .btn-mini { padding: 6px 10px; border-radius: 4px; border: none; cursor: pointer; font-size: 12px; color: white; margin: 0 2px; }
         .admin-tab { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #444; padding-bottom: 10px; }
         .tab-btn { background: none; border: none; color: #888; cursor: pointer; font-weight: bold; font-size: 14px; }
         .tab-btn.active { color: var(--vscode-accent); border-bottom: 2px solid var(--vscode-accent); }
-        .admin-input { background: #3c3c3c; border: 1px solid #555; color: white; padding: 8px; width: 100%; box-sizing: border-box; border-radius: 4px; margin-bottom: 10px; font-family: inherit; }
-        
-        /* 체크박스 스타일 */
-        .admin-check { transform: scale(1.2); cursor: pointer; }
-        .danger-zone { border: 1px solid #cc4125; padding: 15px; border-radius: 8px; margin-top: 20px; }
+        .admin-check { transform: scale(1.3); cursor: pointer; }
+        .admin-input { background: #3c3c3c; border: 1px solid #555; color: white; padding: 10px; width: 100%; box-sizing: border-box; border-radius: 4px; margin-bottom: 10px; font-family: inherit; }
     </style>
 </head>
 <body>
 
-<div id="loader" class="overlay"><div class="spinner"></div><b id="loader-msg">데이터 로드 중...</b></div>
+<div id="loader" class="overlay"><div class="spinner"></div><b id="loader-msg">데이터 동기화 중...</b></div>
 
 <div id="pw-modal">
     <div class="pw-box">
@@ -109,7 +105,7 @@
     </div>
 </div>
 
-<!-- 관리자 정렬/삭제 관리 패널 -->
+<!-- 관리자 패널 -->
 <div id="admin-panel" class="floating-panel">
     <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
         <h2 style="margin:0;">문제 관리 센터</h2>
@@ -143,14 +139,10 @@
         </div>
     </div>
 
-    <div class="danger-zone">
-        <b style="color:#cc4125; display:block; margin-bottom:10px;">⚠️ 위험 구역</b>
-        <button onclick="deleteAllProblems()" style="width:100%; background:#cc4125; color:white; border:none; padding:10px; cursor:pointer; font-weight:bold; border-radius:4px;">현재 로드된 모든 문제 삭제</button>
-    </div>
-
     <div style="margin-top:20px;">
-        <textarea id="json-io" class="admin-input" style="height:60px; font-family:monospace;" placeholder="JSON 결과가 여기에 표시됩니다."></textarea>
-        <button onclick="exportJson()" style="width:100%; background:#444; color:white; border:none; padding:10px; cursor:pointer; border-radius:4px;">현재 정렬 상태 JSON 복사</button>
+        <label class="admin-label">내보내기 결과 (자동 복사됨)</label>
+        <textarea id="json-io" class="admin-input" style="height:100px; font-family:monospace; font-size:11px;" placeholder="JSON 결과가 여기에 표시됩니다."></textarea>
+        <button onclick="exportJson()" style="width:100%; background:#007acc; color:white; border:none; padding:12px; cursor:pointer; font-weight:bold; border-radius:4px;">현재 정렬/삭제 상태로 JSON 내보내기</button>
     </div>
 </div>
 
@@ -165,7 +157,7 @@
     const ADMIN_PW = "1234";
 
     let problems = [], solvedIds = [], currentIdx = -1;
-    let currentUser = localStorage.getItem('coden_user_v61') || "";
+    let currentUser = localStorage.getItem('coden_user_v71') || "";
     let openMainCats = ["COS PRO 2급"], openSubCats = ["1차"], targetMode = "";
 
     function smartFormat(text) {
@@ -186,8 +178,8 @@
     async function initApp() {
         if(!currentUser) { document.getElementById('loader').style.display='none'; document.getElementById('login-screen').style.display='flex'; return; }
         try {
-            let localSaved = localStorage.getItem('coden_probs_v61');
-            if (localSaved) {
+            let localSaved = localStorage.getItem('coden_probs_v71');
+            if (localSaved && JSON.parse(localSaved).length > 0) {
                 problems = JSON.parse(localSaved);
             } else {
                 let combinedData = [];
@@ -196,10 +188,9 @@
                 }
                 try {
                     const sheetRes = await fetch(`${MASTER_CLOUD_URL}?action=getProblems`);
-                    const sheetData = await sheetRes.json();
-                    combinedData = [...combinedData, ...sheetData];
+                    combinedData = [...combinedData, ...(await sheetRes.json())];
                 } catch(e) {}
-                problems = combinedData.map((p, i) => ({ id: 60000 + i, ...p }));
+                problems = combinedData.map((p, i) => ({ id: 80000 + i, ...p }));
             }
 
             const sRes = await fetch(`${MASTER_CLOUD_URL}?action=getSolved&name=${encodeURIComponent(currentUser)}`);
@@ -208,16 +199,14 @@
             require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs' }});
             require(['vs/editor/editor.main'], async function() {
                 editor = monaco.editor.create(document.getElementById('editor-container'), { value: "", language: 'python', theme: 'vs-dark', fontSize: 16, automaticLayout: true, minimap: { enabled: false }});
-                editor.onDidChangeModelContent(() => { if (currentIdx !== -1) localStorage.setItem(`draft_${currentUser}_${currentIdx}`, editor.getValue()); });
                 pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/" });
                 document.getElementById('loader').style.display = 'none'; document.getElementById('main-app').style.display = 'flex';
                 document.getElementById('user-display').innerText = currentUser;
-                
                 let next = problems.find(p => !solvedIds.includes(p.id)) || problems[0];
                 if(next) { openMainCats=[next.mainCat]; openSubCats=[next.subCat]; loadProblem(next.id); }
                 renderList();
             });
-        } catch(e) { alert("연결 실패!"); location.reload(); }
+        } catch(e) { alert("서버 연결 실패!"); location.reload(); }
     }
 
     function renderList() {
@@ -233,7 +222,7 @@
                 for(const s in tree[m]) {
                     const sOpen = openSubCats.includes(s);
                     const sDiv = document.createElement('div'); sDiv.className=`sub-cat-header`; sDiv.innerText=s;
-                    sDiv.onclick = () => { sOpen ? openSubCats = openSubCats.filter(x=>x!=s) : openSubCats.push(s); renderList(); };
+                    sDiv.onclick = () => { sOpen ? openSubCats = openSubCats.filter(c=>c!=s) : openSubCats.push(s); renderList(); };
                     root.appendChild(sDiv);
                     if(sOpen) {
                         tree[m][s].forEach(p => {
@@ -248,25 +237,23 @@
         document.getElementById('progress-stats').innerText = `성취도: ${problems.length?Math.floor((solvedIds.length/problems.length)*100):0}% (${solvedIds.length}/${problems.length})`;
     }
 
-    // [관리자] 문제별 관리 렌더링 (체크박스 포함)
     function renderSortManager() {
         const body = document.getElementById('sort-body'); body.innerHTML = "";
         problems.forEach((p, i) => {
             body.innerHTML += `<tr style='border-bottom:1px solid #333;'>
-                <td><input type="checkbox" class="admin-check prob-check" data-idx="${i}"></td>
+                <td><input type="checkbox" class="prob-check" data-idx="${i}"></td>
                 <td style='color:#777;'>${p.subCat}</td>
                 <td style='text-align:left;'>${p.title}</td>
                 <td>
-                    <button class='btn-mini' style='background:#555;' onclick='moveProb(${i},-1000)' title='맨위'>⤒</button>
+                    <button class='btn-mini' style='background:#555;' onclick='moveProb(${i},-1000)'>⤒</button>
                     <button class='btn-mini' style='background:#007acc;' onclick='moveProb(${i},-1)'>▲</button>
                     <button class='btn-mini' style='background:#007acc;' onclick='moveProb(${i},1)'>▼</button>
-                    <button class='btn-mini' style='background:#555;' onclick='moveProb(${i},1000)' title='맨아래'>⤓</button>
+                    <button class='btn-mini' style='background:#555;' onclick='moveProb(${i},1000)'>⤓</button>
                 </td>
             </tr>`;
         });
     }
 
-    // [관리자] 기능들
     function toggleAllChecks() {
         const checks = document.querySelectorAll('.prob-check');
         const allChecked = Array.from(checks).every(c => c.checked);
@@ -277,38 +264,24 @@
         const checks = document.querySelectorAll('.prob-check:checked');
         if (checks.length === 0) return alert("삭제할 문제를 선택하세요.");
         if (!confirm(`${checks.length}개의 문제를 삭제할까요?`)) return;
-
-        const indicesToDelete = Array.from(checks).map(c => parseInt(c.dataset.idx)).sort((a,b) => b-a);
-        indicesToDelete.forEach(idx => problems.splice(idx, 1));
-        
+        const indices = Array.from(checks).map(c => parseInt(c.dataset.idx)).sort((a,b) => b-a);
+        indices.forEach(idx => problems.splice(idx, 1));
         updateSortAll();
-    }
-
-    function deleteAllProblems() {
-        if (!confirm("정말 모든 문제를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) return;
-        problems = [];
-        updateSortAll();
-        alert("모든 문제가 삭제되었습니다.");
     }
 
     function moveProb(idx, dir) {
-        let target = idx + dir;
-        if (dir === -1000) target = 0;
-        if (dir === 1000) target = problems.length - 1;
-        if (target < 0) target = 0;
-        if (target >= problems.length) target = problems.length - 1;
+        let target = (dir === -1000) ? 0 : (dir === 1000) ? problems.length - 1 : idx + dir;
+        if (target < 0) target = 0; if (target >= problems.length) target = problems.length - 1;
         const item = problems.splice(idx, 1)[0];
         problems.splice(target, 0, item);
         updateSortAll();
     }
 
     function updateSortAll() {
-        localStorage.setItem('coden_probs_v61', JSON.stringify(problems));
-        renderSortManager();
-        renderList();
+        localStorage.setItem('coden_probs_v71', JSON.stringify(problems));
+        renderSortManager(); renderList();
     }
 
-    // [나머지 필수 함수]
     function switchAdminTab(type) {
         document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
         if(type==='prob') {
@@ -334,16 +307,12 @@
 
     function moveCategory(catName, dir) {
         const subCats = [...new Set(problems.map(p => p.subCat))];
-        const cur = subCats.indexOf(catName);
-        const tar = cur + dir;
+        const cur = subCats.indexOf(catName); const tar = cur + dir;
         if(tar < 0 || tar >= subCats.length) return;
-        subCats.splice(cur, 1);
-        subCats.splice(tar, 0, catName);
+        subCats.splice(cur, 1); subCats.splice(tar, 0, catName);
         let newOrder = [];
         subCats.forEach(s => { newOrder = [...newOrder, ...problems.filter(p => p.subCat === s)]; });
-        problems = newOrder;
-        updateSortAll();
-        renderCatSortManager();
+        problems = newOrder; updateSortAll(); renderCatSortManager();
     }
 
     function loadProblem(id) {
@@ -351,8 +320,7 @@
         currentIdx = id; renderList();
         document.getElementById('prob-title').innerText = p.title;
         document.getElementById('prob-desc-container').innerHTML = smartFormat(p.desc);
-        const savedDraft = localStorage.getItem(`draft_${currentUser}_${id}`);
-        editor.setValue(savedDraft || p.initial || "");
+        editor.setValue(p.initial || "");
     }
 
     async function runCode() {
@@ -371,6 +339,24 @@
         } catch(e) { document.getElementById('output').innerText = "에러: " + e.message.split('at pyodide')[0]; }
     }
 
+    // [핵심] JSON 내보내기 기능 보강
+    function exportJson() {
+        // ID 필드를 제외하고 순수한 데이터만 추출하여 깃허브용 포맷 생성
+        const cleanData = problems.map(({id, ...rest}) => rest);
+        const jsonStr = JSON.stringify(cleanData, null, 2);
+        const io = document.getElementById('json-io');
+        io.value = jsonStr;
+        io.select();
+        
+        // 클립보드 복사 시도
+        try {
+            navigator.clipboard.writeText(jsonStr);
+            alert("정렬된 데이터가 JSON으로 변환되어 클립보드에 복사되었습니다!\n깃허브 파일 내용 전체를 선택하고 붙여넣으세요.");
+        } catch(err) {
+            alert("자동 복사가 차단되었습니다. 텍스트 박스 안의 내용을 직접 복사하세요.");
+        }
+    }
+
     function askPw(mode) { targetMode = mode; document.getElementById('pw-modal').style.display='flex'; }
     function checkPw() { if(document.getElementById('pw-input').value === ADMIN_PW) { document.getElementById('pw-modal').style.display='none'; if(targetMode == 'dashboard') { document.getElementById('dashboard-panel').style.display='block'; showStats(); } else { document.getElementById('admin-panel').style.display='block'; renderSortManager(); } } else { alert("오류"); } }
     async function showStats() {
@@ -382,13 +368,10 @@
         body.innerHTML = "";
         Object.keys(stats).forEach(n => { const cnt = stats[n].size; body.innerHTML += `<tr><td>${n}</td><td>${Math.floor((cnt/problems.length)*100)}%</td><td>${cnt}개</td></tr>`; });
     }
-    function exportJson() { document.getElementById('json-io').value = JSON.stringify(problems, null, 2); alert("JSON 복사됨"); }
-    function login() { const n = document.getElementById('user-name').value.trim(); if(n) { localStorage.setItem('coden_user_v61', n); location.reload(); } }
-    function logout() { localStorage.removeItem('coden_user_v61'); location.reload(); }
+    function login() { const n = document.getElementById('user-name').value.trim(); if(n) { localStorage.setItem('coden_user_v71', n); location.reload(); } }
+    function logout() { localStorage.removeItem('coden_user_v71'); location.reload(); }
     function closePanels() { document.querySelectorAll('.floating-panel').forEach(p=>p.style.display='none'); }
     function closePwModal() { document.getElementById('pw-modal').style.display = 'none'; }
-    function showHint() { alert("💡 힌트: " + problems.find(p => p.id === currentIdx).hint); }
-
     initApp();
 </script>
 </body>
