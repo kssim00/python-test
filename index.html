@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>코드:앤 파이썬 스튜디오 (v7.7)</title>
+    <title>코드:앤 파이썬 스튜디오 (v7.8)</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/loader.min.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
@@ -14,68 +14,82 @@
         html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: var(--vscode-bg); color: var(--vscode-text); font-family: 'Pretendard', sans-serif; }
         .app-wrapper { display: none; height: 100vh; width: 100vw; overflow: hidden; }
         
-        /* [기능] 거의 안보이는 얇은 스크롤바 */
+        /* 얇고 거의 안 보이는 스크롤바 */
         ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #444; }
         ::-webkit-scrollbar-track { background: transparent; }
 
+        /* 오버레이 공통 */
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1e1e1e; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
         .spinner { width: 40px; height: 40px; border: 4px solid #333; border-top: 4px solid var(--vscode-accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        #pw-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; }
-        .pw-box { background: #252526; padding: 30px; border-radius: 12px; border: 1px solid #444; width: 300px; text-align: center; }
+        /* 모달 스타일 (비번 & 힌트 공용) */
+        .custom-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; }
+        .modal-box { background: #252526; padding: 30px; border-radius: 12px; border: 1px solid #444; width: 320px; text-align: center; box-shadow: 0 10px 50px rgba(0,0,0,1); }
 
+        /* 레이아웃 구조 */
         .activity-bar { width: 50px; background: #333; display: flex; flex-direction: column; align-items: center; padding: 20px 0; justify-content: space-between; flex-shrink: 0; }
         .explorer { width: 250px; background: var(--vscode-side); border-right: 1px solid #333; display: flex; flex-direction: column; flex-shrink: 0; }
         .main-content { flex: 1; display: flex; overflow: hidden; position: relative; }
-        .description-panel { width: 400px; min-width: 200px; padding: 25px; border-right: 1px solid #333; background: #1e1e1e; overflow-y: auto; flex-shrink: 0; box-sizing: border-box; }
-        .resizer-h { width: 4px; cursor: col-resize; background: #222; z-index: 5; }
-        .resizer-h:hover { background: var(--vscode-accent); }
-        .editor-section { flex: 1; display: flex; flex-direction: column; min-width: 300px; position: relative; overflow: hidden; }
-        #editor-container { flex: 1; width: 100%; }
-        .resizer-v { height: 4px; cursor: row-resize; background: #222; z-index: 5; }
-        .resizer-v:hover { background: var(--vscode-accent); }
-        .console-area { height: 180px; min-height: 50px; background: #000; padding: 8px 15px; border-top: 1px solid #333; overflow-y: auto; flex-shrink: 0; }
         
-        .btn-run { position: absolute; right: 25px; top: 15px; z-index: 10; background: #28a745; color: white; border: none; padding: 8px 20px; cursor: pointer; font-weight: bold; border-radius: 4px; }
+        /* 지문 패널 */
+        .description-panel { width: 400px; min-width: 150px; padding: 25px; border-right: 1px solid #333; background: #1e1e1e; overflow-y: auto; flex-shrink: 0; box-sizing: border-box; }
+        
+        /* 리사이저 (마우스 잡는 선) */
+        .resizer-h { width: 6px; cursor: col-resize; background: #222; z-index: 5; transition: background 0.2s; margin-right: -3px; margin-left: -3px; }
+        .resizer-h:hover, .resizer-h.active { background: var(--vscode-accent); }
+        .resizer-v { height: 6px; cursor: row-resize; background: #222; z-index: 5; transition: background 0.2s; margin-top: -3px; margin-bottom: -3px; }
+        .resizer-v:hover, .resizer-v.active { background: var(--vscode-accent); }
+
+        .editor-section { flex: 1; display: flex; flex-direction: column; min-width: 200px; position: relative; overflow: hidden; }
+        #editor-container { flex: 1; width: 100%; }
+        
+        /* 터미널 패널 */
+        .console-area { height: 200px; min-height: 40px; background: #000; padding: 10px 15px; border-top: 1px solid #333; overflow-y: auto; flex-shrink: 0; }
+        #output { color: #00ff00; font-family: 'Courier New', monospace; white-space: pre-wrap; font-size: 14px; line-height: 1.3; margin-top: 5px; }
+        
+        .btn-run { position: absolute; right: 25px; top: 15px; z-index: 10; background: #28a745; color: white; border: none; padding: 8px 20px; cursor: pointer; font-weight: bold; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .btn-run:hover { background: #218838; }
+
         .desc-section-title { font-weight: bold; color: #fff; margin: 25px 0 10px 0; font-size: 16px; border-left: 5px solid var(--vscode-accent); padding-left: 12px; }
         .desc-text { line-height: 1.8; color: #ccc; font-size: 14.5px; margin-bottom: 10px; }
         .example-box { background: #2d2d2d; border-radius: 8px; padding: 15px; border: 1px solid #444; color: #eee; font-family: 'Courier New', monospace; margin: 10px 0; }
         .example-label { color: #888; font-size: 11px; margin-bottom: 5px; font-family: 'Pretendard'; }
 
+        /* 아코디언 메뉴 */
         .main-cat-header { padding: 12px 15px; font-size: 12px; font-weight: bold; color: #fff; background: #37373d; cursor: pointer; border-bottom: 1px solid #222; }
         .sub-cat-header { padding: 10px 15px 10px 30px; font-size: 12px; font-weight: bold; color: #999; background: #2d2d2d; cursor: pointer; border-bottom: 1px solid #222; }
         .prob-item { padding: 8px 15px 8px 50px; cursor: pointer; font-size: 13px; color: #aaa; border-bottom: 1px solid #282828; }
         .prob-item.active { background: #37373d; color: white; border-left: 3px solid var(--vscode-accent); }
         .prob-item.solved { color: #28a745; font-weight: bold; }
 
-        /* [기능] 관리자 패널 좌우 분할 */
-        .floating-panel { display: none; position: fixed; top: 20px; left: 60px; right: 20px; bottom: 20px; background: #252526; border: 1px solid #444; border-radius: 12px; z-index: 1000; padding: 25px; overflow: hidden; box-shadow: 0 10px 50px rgba(0,0,0,0.8); }
-        .admin-container { display: flex; gap: 20px; height: 100%; }
-        .admin-left { flex: 3; display: flex; flex-direction: column; overflow: hidden; }
-        .admin-right { flex: 2; border-left: 1px solid #444; padding-left: 20px; overflow-y: auto; }
-        
+        /* 관리자용 둥근 패널 */
+        .floating-panel { display: none; position: fixed; top: 30px; left: 65px; right: 20px; bottom: 20px; background: #252526; border: 1px solid #444; border-radius: 12px; z-index: 1000; padding: 25px; box-shadow: 0 10px 50px rgba(0,0,0,0.8); }
+        .admin-container { display: flex; gap: 20px; height: 100%; overflow: hidden; }
         .master-table { width: 100%; border-collapse: collapse; color: #ddd; font-size: 12px; }
         .master-table th, .master-table td { padding: 8px; border: 1px solid #444; text-align: center; }
-        .btn-mini { padding: 4px 6px; border-radius: 3px; border: none; cursor: pointer; font-size: 11px; color: white; margin: 0 2px; }
-        .admin-tab { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #444; }
-        .tab-btn { background: none; border: none; color: #888; cursor: pointer; font-weight: bold; font-size: 13px; padding-bottom: 5px; }
-        .tab-btn.active { color: var(--vscode-accent); border-bottom: 2px solid var(--vscode-accent); }
-        .admin-input { background: #3c3c3c; border: 1px solid #555; color: white; padding: 8px; width: 100%; box-sizing: border-box; border-radius: 4px; margin-bottom: 10px; font-family: inherit; }
-        
-        .btn-report { background: #007acc; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer; }
+        .btn-mini { padding: 5px 8px; border-radius: 4px; border: none; cursor: pointer; font-size: 11px; color: white; }
+        .admin-input { background: #3c3c3c; border: 1px solid #555; color: white; padding: 10px; width: 100%; box-sizing: border-box; border-radius: 4px; margin-bottom: 10px; font-family: inherit; }
     </style>
 </head>
-<body>
+<body onselectstart="return !isDragging"> <!-- 조절 중 텍스트 선택 방지 -->
 
-<div id="loader" class="overlay"><div class="spinner"></div><b id="loader-msg">데이터 연동 중...</b></div>
+<div id="loader" class="overlay"><div class="spinner"></div><b id="loader-msg">스튜디오 데이터 연동 중...</b></div>
 
-<div id="pw-modal">
-    <div class="pw-box">
-        <h3 style="color:white; margin-top:0;">관리자 인증</h3>
-        <input type="password" id="pw-input" class="admin-input" style="text-align:center; font-size:20px; letter-spacing: 5px;" onkeypress="if(event.keyCode==13) checkPw()">
+<!-- [공통] 비번/힌트 모달 -->
+<div id="pw-modal" class="custom-modal">
+    <div class="modal-box">
+        <h3 id="modal-title" style="color:white; margin-top:0;">관리자 인증</h3>
+        <p id="modal-msg" style="color:#aaa; font-size:13px; margin-bottom:15px;">비밀번호를 입력하세요.</p>
+        <div id="pw-input-area">
+            <input type="password" id="pw-input" class="admin-input" style="text-align:center; font-size:20px; letter-spacing:5px;" onkeypress="if(event.keyCode==13) checkPw()">
+        </div>
+        <div id="hint-content-area" style="display:none; color:#eee; line-height:1.6; font-size:14px; text-align:left; margin-bottom:20px;"></div>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <button id="modal-ok-btn" onclick="checkPw()" style="flex:1; background:var(--vscode-accent); color:white; border:none; padding:10px; cursor:pointer; font-weight:bold; border-radius:4px;">확인</button>
+            <button onclick="closePanels()" style="flex:1; background:#444; color:white; border:none; padding:10px; cursor:pointer; border-radius:4px;">취소</button>
+        </div>
     </div>
 </div>
 
@@ -91,9 +105,8 @@
     <div class="activity-bar">
         <div style="text-align: center;"><i class="fas fa-code" style="color:white; font-size: 22px; margin-bottom: 25px;"></i><div id="user-display" style="font-size: 10px; color: #28a745; font-weight: bold; writing-mode: vertical-lr;">USER</div></div>
         <div>
-            <div id="sync-icon" title="동기화 상태"><i class="fas fa-sync-alt" style="color:#28a745; margin-bottom: 25px;"></i></div>
             <div onclick="askPw('dashboard')" title="성취도"><i class="fas fa-chart-line" style="color:#888; margin-bottom: 25px; cursor:pointer;"></i></div>
-            <div onclick="askPw('setting')" title="문제 관리 및 테스트"><i class="fas fa-tasks" style="color:#888; margin-bottom: 25px; cursor:pointer;"></i></div>
+            <div onclick="askPw('setting')" title="문제 관리"><i class="fas fa-tasks" style="color:#888; margin-bottom: 25px; cursor:pointer;"></i></div>
             <div onclick="logout()" title="로그아웃"><i class="fas fa-sign-out-alt" style="color:#555; cursor:pointer;"></i></div>
         </div>
     </div>
@@ -102,11 +115,11 @@
         <div id="accordion-root" style="flex: 1; overflow-y: auto;"></div>
         <div id="progress-stats" style="padding: 15px 20px; font-size: 12px; color: #28a745; border-top: 1px solid #333; font-weight:bold;">성취도: 0%</div>
     </div>
-    <div class="main-content" id="resize-container">
+    <div class="main-content">
         <div class="description-panel" id="panel-desc">
             <h2 id="prob-title" style="margin: 0 0 20px 0; color: white;">문제를 선택하세요</h2>
             <div id="prob-desc-container"></div>
-            <button id="hint-btn" style="background:#6e40aa; color:white; border:none; padding:8px 15px; border-radius:4px; font-size:12px; cursor:pointer; margin-top:25px; display:none;" onclick="showHint()"><i class="fas fa-lightbulb"></i> 힌트 보기</button>
+            <button id="hint-btn" style="background:#6e40aa; color:white; border:none; padding:8px 15px; border-radius:4px; font-size:12px; cursor:pointer; margin-top:25px; display:none;" onclick="showHint()"><i class="fas fa-lightbulb"></i> 💡 힌트 보기</button>
         </div>
         <div class="resizer-h" id="resizer-h"></div>
         <div class="editor-section">
@@ -121,72 +134,36 @@
     </div>
 </div>
 
-<!-- 관리자 통합 패널 -->
-<div id="admin-panel" class="floating-panel">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h2 style="margin:0;">문제 관리 마스터 (v7.7)</h2>
-        <button onclick="closePanels()" style="background:#444; color:white; border:none; padding:5px 15px; border-radius:4px; cursor:pointer;">닫기</button>
-    </div>
-
-    <div class="admin-container">
-        <!-- 왼쪽: 순서 및 삭제 관리 -->
-        <div class="admin-left">
-            <div class="admin-tab">
-                <button id="tab-prob" class="tab-btn active" onclick="switchAdminTab('prob')">문제별 순서</button>
-                <button id="tab-cat" class="tab-btn" onclick="switchAdminTab('cat')">카테고리별 이동</button>
-            </div>
-            
-            <div id="admin-prob-view" style="flex:1; overflow-y:auto; background:#111; padding:10px; border-radius:8px;">
-                <div style="margin-bottom:10px; display:flex; gap:10px;">
-                    <button class="btn-mini" style="background:#555;" onclick="toggleAllChecks()">전체 선택/해제</button>
-                    <button class="btn-mini" style="background:#cc4125;" onclick="deleteSelected()">선택 삭제</button>
-                    <button class="btn-mini" style="background:#8b0000;" onclick="deleteAllProblems()">전체 삭제</button>
-                </div>
-                <table class="master-table">
-                    <thead><tr><th>선택</th><th>분류</th><th>제목</th><th>이동</th></tr></thead>
-                    <tbody id="sort-body"></tbody>
-                </table>
-            </div>
-
-            <div id="admin-cat-view" style="display:none; flex:1; overflow-y:auto; background:#111; padding:10px; border-radius:8px;">
-                <table class="master-table">
-                    <thead><tr><th>카테고리명</th><th>통째로 이동</th></tr></thead>
-                    <tbody id="cat-sort-body"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- 오른쪽: 테스트 및 복사 -->
-        <div class="admin-right">
-            <b style="color:#ffcc00; font-size:13px;"><i class="fas fa-flask"></i> JSON 코드 직접 테스트</b>
-            <textarea id="test-json-input" class="admin-input" style="height:120px; margin-top:10px;" placeholder="임시 적용할 JSON 코드를 넣으세요."></textarea>
-            <button onclick="applyTestJson()" style="width:100%; background:#28a745; color:white; border:none; padding:10px; cursor:pointer; font-weight:bold; margin-bottom:20px;">화면에 테스트 적용</button>
-            
-            <b style="color:var(--vscode-accent); font-size:13px;"><i class="fas fa-copy"></i> 현재 데이터 백업</b>
-            <textarea id="json-io" class="admin-input" style="height:120px; margin-top:10px;" readonly></textarea>
-            <button onclick="exportJson()" style="width:100%; background:#444; color:white; border:none; padding:10px; cursor:pointer;">현재 정렬 데이터 JSON 복사</button>
-            
-            <div style="margin-top:20px;">
-                <button onclick="resetDataAndSync()" style="width:100%; background:#cc4125; color:white; border:none; padding:10px; cursor:pointer; font-weight:bold;">설정 초기화 (서버 재동기화)</button>
-            </div>
-        </div>
-    </div>
+<div id="dashboard-panel" class="floating-panel">
+    <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3>학생 성취도 현황</h3><button onclick="closePanels()">닫기</button></div>
+    <table class="master-table"><thead><tr style="background:#333;"><th>학생 이름</th><th>성취도(%)</th><th>푼 문제</th><th>리포트</th></tr></thead><tbody id="stats-body"></tbody></table>
 </div>
 
-<div id="dashboard-panel" class="floating-panel">
-    <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3>학생 성취도 및 리포트</h3><button onclick="closePanels()">닫기</button></div>
-    <table class="master-table"><thead><tr style="background:#333;"><th>학생 이름</th><th>성취도</th><th>완료수</th><th>리포트</th></tr></thead><tbody id="stats-body"></tbody></table>
+<div id="admin-panel" class="floating-panel">
+    <div style="display:flex; justify-content:space-between; margin-bottom:20px;"><h2>문제 관리 마스터</h2><button onclick="closePanels()">닫기</button></div>
+    <div class="admin-container">
+        <div style="flex:1; overflow-y:auto; background:#111; padding:10px; border-radius:8px;">
+            <div style="margin-bottom:10px;"><button class="btn-mini" style="background:#555;" onclick="toggleAllChecks()">전체선택</button> <button class="btn-mini" style="background:#cc4125;" onclick="deleteSelected()">선택삭제</button></div>
+            <table class="master-table"><thead><tr><th>체크</th><th>분류</th><th>제목</th><th>이동</th></tr></thead><tbody id="sort-body"></tbody></table>
+        </div>
+        <div style="width:300px; border-left:1px solid #444; padding-left:20px;">
+            <b style="color:var(--vscode-accent);">📦 JSON 테스트</b>
+            <textarea id="test-json-input" class="admin-input" style="height:150px; margin-top:10px; font-size:11px;" placeholder="JSON을 넣으세요"></textarea>
+            <button onclick="applyTestJson()" style="width:100%; background:#28a745; color:white; border:none; padding:10px; cursor:pointer; font-weight:bold;">테스트 적용</button>
+            <button onclick="exportJson()" style="width:100%; background:#444; color:white; border:none; padding:10px; margin-top:10px; cursor:pointer;">현재 데이터 복사</button>
+            <button onclick="resetDataAndSync()" style="width:100%; background:#8b0000; color:white; border:none; padding:10px; margin-top:20px; cursor:pointer;">서버 데이터 초기화</button>
+        </div>
+    </div>
 </div>
 
 <script>
-    const GITHUB_USER = "kssim00", GITHUB_REPO = "python-test";
     const MASTER_CLOUD_URL = "https://script.google.com/macros/s/AKfycbxECzN-NGJWsrx466aoGcodQICqQY2UeNVBJ4_CR8gyxi2TerpznaZAX7xCLw530Yk1/exec";
+    const GITHUB_USER = "kssim00", GITHUB_REPO = "python-test";
     const ADMIN_PW = "1234";
 
-    let problems = [], solvedIds = [], currentIdx = -1;
-    let currentUser = localStorage.getItem('coden_user_v77') || ""; 
-    let openMainCats = [], openSubCats = [], targetMode = "";
-    let pyodide, editor;
+    let problems = [], solvedIds = [], currentIdx = -1, pyodide, editor, isDragging = false;
+    let currentUser = localStorage.getItem('coden_user_v78') || ""; 
+    let openMainCats = ["COS PRO 2급"], openSubCats = ["1차"], targetMode = "";
 
     function smartFormat(text) {
         if (!text) return "";
@@ -206,12 +183,11 @@
     async function initApp() {
         if(!currentUser) { document.getElementById('loader').style.display='none'; document.getElementById('login-screen').style.display='flex'; return; }
         try {
-            let localSaved = localStorage.getItem('coden_probs_v77');
-            if (localSaved) {
-                problems = JSON.parse(localSaved);
-            } else {
-                const githubFilesRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`);
-                const files = await githubFilesRes.json();
+            let localSaved = localStorage.getItem('coden_probs_v78');
+            if (localSaved) { problems = JSON.parse(localSaved); } 
+            else {
+                const filesRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`);
+                const files = await filesRes.json();
                 const jsonUrls = files.filter(f => f.name.endsWith('.json')).map(f => f.download_url);
                 let combined = [];
                 for(let url of jsonUrls) { combined = [...combined, ...(await (await fetch(url)).json())]; }
@@ -228,15 +204,49 @@
                 pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/" });
                 document.getElementById('loader').style.display = 'none'; document.getElementById('main-app').style.display = 'flex';
                 document.getElementById('user-display').innerText = currentUser;
-                renderList(); initResizers();
+                renderList(); initResizing();
             });
         } catch(e) { alert("연결 실패!"); }
     }
 
-    function initResizers() {
-        const h = document.getElementById('resizer-h'), v = document.getElementById('resizer-v'), pD = document.getElementById('panel-desc'), pT = document.getElementById('panel-terminal');
-        h.onmousedown = () => { document.onmousemove = (e) => { let w = e.clientX - 50; if (w > 200 && w < window.innerWidth-400) { pD.style.width = w+"px"; editor.layout(); } }; document.onmouseup = () => document.onmousemove = null; };
-        v.onmousedown = () => { document.onmousemove = (e) => { let h = window.innerHeight - e.clientY; if (h > 50 && h < window.innerHeight-200) { pT.style.height = h+"px"; editor.layout(); } }; document.onmouseup = () => document.onmousemove = null; };
+    // [기능] 부드러운 리사이징 (Fix jumpy behavior)
+    function initResizing() {
+        const hResizer = document.getElementById('resizer-h');
+        const vResizer = document.getElementById('resizer-v');
+        const descPanel = document.getElementById('panel-desc');
+        const terminalPanel = document.getElementById('panel-terminal');
+
+        hResizer.addEventListener('mousedown', (e) => {
+            isDragging = true; hResizer.classList.add('active');
+            const startX = e.clientX;
+            const startWidth = descPanel.offsetWidth;
+            const move = (e) => {
+                if(!isDragging) return;
+                const newWidth = startWidth + (e.clientX - startX);
+                if (newWidth > 150 && newWidth < window.innerWidth - 300) {
+                    descPanel.style.width = `${newWidth}px`;
+                    editor.layout();
+                }
+            };
+            const stop = () => { isDragging = false; hResizer.classList.remove('active'); window.removeEventListener('mousemove', move); };
+            window.addEventListener('mousemove', move); window.addEventListener('mouseup', stop);
+        });
+
+        vResizer.addEventListener('mousedown', (e) => {
+            isDragging = true; vResizer.classList.add('active');
+            const startY = e.clientY;
+            const startHeight = terminalPanel.offsetHeight;
+            const move = (e) => {
+                if(!isDragging) return;
+                const newHeight = startHeight + (startY - e.clientY);
+                if (newHeight > 35 && newHeight < window.innerHeight - 150) {
+                    terminalPanel.style.height = `${newHeight}px`;
+                    editor.layout();
+                }
+            };
+            const stop = () => { isDragging = false; vResizer.classList.remove('active'); window.removeEventListener('mousemove', move); };
+            window.addEventListener('mousemove', move); window.addEventListener('mouseup', stop);
+        });
     }
 
     function renderList() {
@@ -244,12 +254,12 @@
         const tree = {};
         problems.forEach(p => { if(!tree[p.mainCat]) tree[p.mainCat] = {}; if(!tree[p.mainCat][p.subCat]) tree[p.mainCat][p.subCat] = []; tree[p.mainCat][p.subCat].push(p); });
         for(const m in tree) {
-            let mDiv = document.createElement('div'); mDiv.className=`main-cat-header ${openMainCats.includes(m)?'open':''}`; mDiv.innerText=m;
+            let mDiv = document.createElement('div'); mDiv.className=`main-cat-header`; mDiv.innerText=m;
             mDiv.onclick=()=>{ openMainCats.includes(m)?openMainCats=openMainCats.filter(x=>x!=m):openMainCats.push(m); renderList(); };
             root.appendChild(mDiv);
             if(openMainCats.includes(m)) {
                 for(const s in tree[m]) {
-                    let sDiv = document.createElement('div'); sDiv.className=`sub-cat-header ${openSubCats.includes(s)?'open':''}`; sDiv.innerText=s;
+                    let sDiv = document.createElement('div'); sDiv.className=`sub-cat-header`; sDiv.innerText=s;
                     sDiv.onclick=()=>{ openSubCats.includes(s)?openSubCats=openSubCats.filter(x=>x!=s):openSubCats.push(s); renderList(); };
                     root.appendChild(sDiv);
                     if(openSubCats.includes(s)) {
@@ -289,14 +299,48 @@
         } catch(e) { document.getElementById('output').innerText = "에러: " + e.message.split('at pyodide')[0]; }
     }
 
-    // [기능] 리포트 생성 및 인쇄
+    // [기능] 커스텀 힌트 모달
+    function showHint() {
+        const p = problems.find(x => x.id === currentIdx);
+        document.getElementById('modal-title').innerText = "💡 학습 힌트";
+        document.getElementById('modal-msg').style.display = "none";
+        document.getElementById('pw-input-area').style.display = "none";
+        document.getElementById('hint-content-area').style.display = "block";
+        document.getElementById('hint-content-area').innerText = p.hint;
+        document.getElementById('modal-ok-btn').innerText = "이해했어요";
+        document.getElementById('modal-ok-btn').onclick = closePanels;
+        document.getElementById('pw-modal').style.display = "flex";
+    }
+
+    function askPw(mode) {
+        targetMode = mode;
+        document.getElementById('modal-title').innerText = "관리자 인증";
+        document.getElementById('modal-msg').style.display = "block";
+        document.getElementById('pw-input-area').style.display = "block";
+        document.getElementById('hint-content-area').style.display = "none";
+        document.getElementById('pw-input').value = "";
+        document.getElementById('modal-ok-btn').innerText = "확인";
+        document.getElementById('modal-ok-btn').onclick = checkPw;
+        document.getElementById('pw-modal').style.display = 'flex';
+        document.getElementById('pw-input').focus();
+    }
+
+    function checkPw() {
+        const i = document.getElementById('pw-input');
+        if(i.value === ADMIN_PW) {
+            closePanels();
+            if(targetMode == 'dashboard') { document.getElementById('dashboard-panel').style.display='block'; showStats(); }
+            else { document.getElementById('admin-panel').style.display='block'; renderSortManager(); }
+        } else { alert("오류"); i.value=""; }
+    }
+
     async function generateReport(name) {
         const res = await fetch(`${MASTER_CLOUD_URL}?action=getSolved&name=${encodeURIComponent(name)}`);
         const uS = await res.json();
         const p = Math.floor((uS.length / problems.length) * 100) || 0;
-        let html = `<html><head><title>${name} 리포트</title><style>body{font-family:sans-serif;padding:40px;}.bar{background:#eee;height:20px;border-radius:10px;overflow:hidden;margin:20px 0;}.fill{background:#28a745;height:100%;width:${p}%;}</style></head><body><h1>${name} 학생 학습 보고서</h1><div class="bar"><div class="fill"></div></div><h3>종합 성취도: ${p}% (${uS.length}/${problems.length})</h3><ul>`;
+        let html = `<html><head><title>리포트</title><style>body{font-family:sans-serif;padding:40px;}.bar{background:#eee;height:20px;border-radius:10px;overflow:hidden;margin:20px 0;}.fill{background:#28a745;height:100%;width:${p}%;}</style></head><body><h1>${name} 학생 리포트</h1><div class="bar"><div class="fill"></div></div><h3>성취도: ${p}%</h3><ul>`;
         problems.forEach(x => { html += `<li>${uS.includes(x.id)?'●':'○'} ${x.mainCat}>${x.subCat}>${x.title}</li>`; });
-        html += `</ul><button onclick="window.print()">인쇄/PDF저장</button></body></html>`;
+        html += `</ul><button onclick="window.print()">인쇄</button></body></html>`;
         const win = window.open('', '_blank'); win.document.write(html); win.document.close();
     }
 
@@ -304,28 +348,13 @@
         const b = document.getElementById('sort-body'); b.innerHTML = "";
         problems.forEach((p, i) => { b.innerHTML += `<tr><td><input type="checkbox" class="p-check" data-idx="${i}"></td><td style='color:#777;'>${p.subCat}</td><td style='text-align:left;'>${p.title}</td><td><button class='btn-mini' style='background:#007acc;' onclick='moveProb(${i},-1)'>▲</button><button class='btn-mini' style='background:#007acc;' onclick='moveProb(${i},1)'>▼</button></td></tr>`; });
     }
-    function renderCatManager() {
-        const b = document.getElementById('cat-sort-body'); b.innerHTML = "";
-        const cats = [...new Set(problems.map(p => p.subCat))];
-        cats.forEach((c, i) => { b.innerHTML += `<tr><td style='text-align:left; font-weight:bold;'>${c}</td><td><button class='btn-mini' style='background:#007acc;' onclick='moveCategory("${c}",-1)'>▲ 위로</button><button class='btn-mini' style='background:#007acc;' onclick='moveCategory("${c}",1)'>▼ 아래로</button></td></tr>`; });
-    }
     function moveProb(idx, dir) { let t = idx + dir; if (t < 0 || t >= problems.length) return; let tmp = problems[idx]; problems[idx] = problems[t]; problems[t] = tmp; updateAll(); }
-    function moveCategory(name, dir) { 
-        const cats = [...new Set(problems.map(p => p.subCat))]; const cur = cats.indexOf(name); const tar = cur + dir;
-        if(tar < 0 || tar >= cats.length) return;
-        cats.splice(cur, 1); cats.splice(tar, 0, name);
-        let nO = []; cats.forEach(s => { nO = [...nO, ...problems.filter(p => p.subCat === s)]; });
-        problems = nO; updateAll(); renderCatManager();
-    }
     function toggleAllChecks() { const cs = document.querySelectorAll('.p-check'); const all = Array.from(cs).every(c => c.checked); cs.forEach(c => c.checked = !all); }
     function deleteSelected() { const cs = document.querySelectorAll('.p-check:checked'); if(!confirm("삭제?")) return; const ids = Array.from(cs).map(c => parseInt(c.dataset.idx)).sort((a,b)=>b-a); ids.forEach(i => problems.splice(i, 1)); updateAll(); }
-    function deleteAllProblems() { if(confirm("전부삭제?")) { problems = []; updateAll(); } }
-    function resetDataAndSync() { if(confirm("초기화?")) { localStorage.removeItem('coden_probs_v77'); location.reload(); } }
-    function updateAll() { localStorage.setItem('coden_probs_v77', JSON.stringify(problems)); renderSortManager(); renderList(); }
+    function resetDataAndSync() { if(confirm("초기화?")) { localStorage.removeItem('coden_probs_v78'); location.reload(); } }
+    function updateAll() { localStorage.setItem('coden_probs_v78', JSON.stringify(problems)); renderSortManager(); renderList(); }
     function applyTestJson() { try { const d = JSON.parse(document.getElementById('test-json-input').value); problems = [...d.map((p,i)=>({id:99000+i,...p})), ...problems]; renderList(); alert("테스트 적용됨"); closePanels(); } catch(e){alert("JSON 오류");} }
     function exportJson() { document.getElementById('json-io').value = JSON.stringify(problems.map(({id, ...rest})=>rest), null, 2); alert("복사됨"); }
-    function askPw(mode) { targetMode = mode; document.getElementById('pw-modal').style.display='flex'; document.getElementById('pw-input').focus(); }
-    function checkPw() { const i = document.getElementById('pw-input'); if(i.value === ADMIN_PW) { i.value=""; document.getElementById('pw-modal').style.display='none'; if(targetMode == 'dashboard') { document.getElementById('dashboard-panel').style.display='block'; showStats(); } else { document.getElementById('admin-panel').style.display='block'; renderSortManager(); } } else { alert("오류"); i.value=""; } }
     async function showStats() {
         const body = document.getElementById('stats-body'); body.innerHTML = "로드 중...";
         try {
@@ -336,15 +365,9 @@
             Object.keys(stats).forEach(n => { const cnt = stats[n].size; body.innerHTML += `<tr><td>${n}</td><td>${Math.floor((cnt/problems.length)*100)}%</td><td>${cnt}개</td><td><button class='btn-report' onclick="generateReport('${n}')">📄 리포트</button></td><td>❌</td></tr>`; });
         } catch(e) { body.innerHTML = "데이터 없음"; }
     }
-    function switchAdminTab(t) { 
-        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-        if(t==='prob') { document.getElementById('tab-prob').classList.add('active'); document.getElementById('admin-prob-view').style.display='block'; document.getElementById('admin-cat-view').style.display='none'; renderSortManager(); }
-        else { document.getElementById('tab-cat').classList.add('active'); document.getElementById('admin-prob-view').style.display='none'; document.getElementById('admin-cat-view').style.display='block'; renderCatManager(); }
-    }
-    function login() { const n = document.getElementById('user-name').value.trim(); if(n) { localStorage.setItem('coden_user_v77', n); location.reload(); } }
-    function logout() { localStorage.removeItem('coden_user_v77'); location.reload(); }
-    function closePanels() { document.querySelectorAll('.floating-panel').forEach(p=>p.style.display='none'); }
-    function showHint() { alert("💡 " + problems.find(p => p.id === currentIdx).hint); }
+    function login() { const n = document.getElementById('user-name').value.trim(); if(n) { localStorage.setItem('coden_user_v78', n); location.reload(); } }
+    function logout() { localStorage.removeItem('coden_user_v78'); location.reload(); }
+    function closePanels() { document.querySelectorAll('.floating-panel, .custom-modal').forEach(p=>p.style.display='none'); }
 
     initApp();
 </script>
