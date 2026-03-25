@@ -2,9 +2,9 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>코드:앤 파이썬 스튜디오 (Auto-Cloud)</title>
+    <title>코드:앤 파이썬 스튜디오</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/mon/vs/loader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/loader.min.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -40,8 +40,6 @@
         .prob-item.active { background: #37373d; color: white; border-left: 3px solid var(--vscode-accent); }
         .prob-item.solved { color: #28a745; font-weight: bold; }
         .floating-panel { display: none; position: fixed; top: 30px; left: 65px; right: 35px; bottom: 35px; background: #252526; border: 1px solid #444; border-radius: 12px; z-index: 1000; padding: 25px; overflow-y: auto; box-shadow: 0 10px 50px rgba(0,0,0,0.8); }
-        .admin-section { margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px; }
-        .admin-input { background: #3c3c3c; border: 1px solid #555; color: white; padding: 8px; width: 100%; box-sizing: border-box; border-radius: 4px; margin-bottom: 8px; font-family: inherit; }
         .master-table { width: 100%; border-collapse: collapse; color: #ddd; font-size: 12px; }
         .master-table th, .master-table td { padding: 8px; border: 1px solid #444; text-align: center; }
         .btn-mini { padding: 4px 6px; border-radius: 3px; border: none; cursor: pointer; font-size: 10px; color: white; }
@@ -49,12 +47,12 @@
 </head>
 <body>
 
-<div id="loader" class="overlay"><div class="spinner"></div><b id="loader-msg">스튜디오 자동 동기화 중...</b></div>
+<div id="loader" class="overlay"><div class="spinner"></div><b id="loader-msg">데이터 동기화 중...</b></div>
 
 <div id="pw-modal">
     <div class="pw-box">
         <h3 style="color:white; margin-top:0;">관리자 인증</h3>
-        <input type="password" id="pw-input" class="admin-input" style="text-align:center; font-size:20px; letter-spacing:5px;" onkeypress="if(event.keyCode==13) checkPw()">
+        <input type="password" id="pw-input" style="background:#3c3c3c; border:1px solid #555; color:white; padding:10px; width:200px; text-align:center;" onkeypress="if(event.keyCode==13) checkPw()">
         <div style="display:flex; gap:10px; margin-top:10px;">
             <button onclick="checkPw()" style="flex:1; background:#007acc; color:white; border:none; padding:10px; cursor:pointer; font-weight:bold; border-radius:4px;">확인</button>
             <button onclick="closePwModal()" style="flex:1; background:#444; color:white; border:none; padding:10px; cursor:pointer; border-radius:4px;">취소</button>
@@ -65,7 +63,7 @@
 <div id="login-screen" class="overlay" style="display:none;">
     <div style="background:#252526; padding:40px; border-radius:15px; width:300px; text-align:center; border:1px solid #444;">
         <h2 style="color:white; margin-bottom:20px;">코드:앤 파이썬 스튜디오</h2>
-        <input type="text" id="user-name" class="admin-input" style="text-align:center;" placeholder="학생 이름 입력" onkeypress="if(event.keyCode==13) login()">
+        <input type="text" id="user-name" class="admin-input" style="background:#3c3c3c; border:1px solid #555; color:white; padding:12px; width:100%; box-sizing:border-box; text-align:center; border-radius:4px;" placeholder="학생 이름 입력" onkeypress="if(event.keyCode==13) login()">
         <button onclick="login()" style="width:100%; background:#007acc; color:white; border:none; padding:12px; cursor:pointer; font-weight:bold; border-radius:4px; margin-top:15px;">학습 시작</button>
     </div>
 </div>
@@ -74,19 +72,17 @@
     <div class="activity-bar">
         <div style="text-align: center;"><i class="fas fa-code" style="color:white; font-size: 22px; margin-bottom: 25px;"></i><div id="user-display" style="font-size: 10px; color: #28a745; font-weight: bold; writing-mode: vertical-lr;">USER</div></div>
         <div>
-            <div id="sync-icon" title="자동 동기화 활성"><i class="fas fa-magic" style="color:#28a745; margin-bottom: 25px;"></i></div>
+            <div id="sync-icon" title="동기화 완료"><i class="fas fa-check-circle" style="color:#28a745; margin-bottom: 25px;"></i></div>
             <div onclick="askPw('dashboard')" title="성취도"><i class="fas fa-chart-line" style="color:#888; margin-bottom: 25px; cursor:pointer;"></i></div>
             <div onclick="askPw('setting')" title="문제 관리"><i class="fas fa-tasks" style="color:#888; margin-bottom: 25px; cursor:pointer;"></i></div>
             <div onclick="logout()" title="로그아웃"><i class="fas fa-sign-out-alt" style="color:#555; cursor:pointer;"></i></div>
         </div>
     </div>
-
     <div class="explorer">
         <div style="padding: 15px 20px; font-size: 11px; color: #888; font-weight: bold;">EXPLORER</div>
         <div id="accordion-root" style="flex: 1; overflow-y: auto;"></div>
         <div id="progress-stats" style="padding: 15px 20px; font-size: 12px; color: #28a745; border-top: 1px solid #333; font-weight:bold;">성취도: 0%</div>
     </div>
-
     <div class="main-content">
         <div class="description-panel">
             <h2 id="prob-title" style="margin: 0 0 20px 0; color: white;">문제를 선택하세요</h2>
@@ -104,7 +100,7 @@
 <div id="admin-panel" class="floating-panel">
     <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h2>문제 관리 마스터</h2><button onclick="closePanels()">닫기</button></div>
     <div class="admin-section">
-        <b style="color:var(--vscode-accent);">↕️ 현재 로드된 문제 순서 관리</b>
+        <b style="color:var(--vscode-accent);">↕️ 문제 순서 및 삭제 관리</b>
         <div style="max-height:300px; overflow-y:auto; background:#111; padding:10px; margin-top:10px; border-radius:8px;">
             <table class="master-table">
                 <thead><tr><th>분류</th><th>제목</th><th>순서</th><th>삭제</th></tr></thead>
@@ -113,12 +109,12 @@
         </div>
     </div>
     <div class="admin-section" style="border:none;">
-        <button onclick="exportJson()" style="width:100%; background:#444; color:white; border:none; padding:10px; cursor:pointer;">전체 데이터 JSON 복사 (백업용)</button>
+        <button onclick="exportJson()" style="width:100%; background:#444; color:white; border:none; padding:10px; cursor:pointer;">전체 데이터 JSON 복사</button>
     </div>
 </div>
 
 <div id="dashboard-panel" class="floating-panel">
-    <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3>실시간 성취도 현황</h3><button onclick="closePanels()">닫기</button></div>
+    <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3>학생 성취도 현황</h3><button onclick="closePanels()">닫기</button></div>
     <table class="master-table">
         <thead><tr style="background:#333;"><th>학생 이름</th><th>성취도(%)</th><th>푼 문제</th></tr></thead>
         <tbody id="stats-body"></tbody>
@@ -126,15 +122,17 @@
 </div>
 
 <script>
-    // [설정] 원장님 정보 (수정 불필요)
-    const GITHUB_USER = "kssim00";
-    const GITHUB_REPO = "python-test";
+    // [중요] 깃허브 JSON 파일 주소 (차단 방지를 위해 직접 입력)
+    const GITHUB_JSON_FILES = [
+        "https://raw.githubusercontent.com/kssim00/python-test/refs/heads/main/cospro2(1-6).json"
+    ];
+    // 원장님 구글 시트 배포 주소
     const MASTER_CLOUD_URL = "https://script.google.com/macros/s/AKfycbxECzN-NGJWsrx466aoGcodQICqQY2UeNVBJ4_CR8gyxi2TerpznaZAX7xCLw530Yk1/exec";
     const ADMIN_PW = "1234";
 
     let problems = [], solvedIds = [], currentIdx = -1;
-    let currentUser = localStorage.getItem('coden_user_v51') || "";
-    let openMainCats = [], openSubCats = [], targetMode = "";
+    let currentUser = localStorage.getItem('coden_user_v60') || "";
+    let openMainCats = ["COS PRO 2급"], openSubCats = ["1차"], targetMode = "";
 
     function smartFormat(text) {
         if (!text) return "";
@@ -154,26 +152,18 @@
     async function initApp() {
         if(!currentUser) { document.getElementById('loader').style.display='none'; document.getElementById('login-screen').style.display='flex'; return; }
         try {
-            // [1. 자동 파일 탐색] 깃허브 API를 이용해 모든 JSON 파일 목록 가져오기
-            const apiRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`);
-            const files = await apiRes.json();
-            const jsonFiles = files.filter(f => f.name.endsWith('.json')).map(f => f.download_url);
-            
-            // [2. 모든 JSON 파일 내용 병합]
+            // 1. 깃허브 JSON 데이터 로드
             let combinedData = [];
-            for(let url of jsonFiles) {
+            for(let url of GITHUB_JSON_FILES) {
                 const res = await fetch(url);
                 const data = await res.json();
                 combinedData = [...combinedData, ...data];
             }
-
-            // [3. 구글 시트 데이터 로드]
+            // 2. 구글 시트 추가 데이터 로드
             const sheetRes = await fetch(`${MASTER_CLOUD_URL}?action=getProblems`);
             const sheetData = await sheetRes.json();
-            
-            problems = [...combinedData, ...sheetData].map((p, i) => ({ id: 20000 + i, ...p }));
-            
-            // [4. 기록 로드]
+            problems = [...combinedData, ...sheetData].map((p, i) => ({ id: 30000 + i, ...p }));
+            // 3. 학생 기록 로드
             const sRes = await fetch(`${MASTER_CLOUD_URL}?action=getSolved&name=${encodeURIComponent(currentUser)}`);
             solvedIds = (await sRes.json()).map(id => parseInt(id));
 
@@ -184,12 +174,11 @@
                 pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/" });
                 document.getElementById('loader').style.display = 'none'; document.getElementById('main-app').style.display = 'flex';
                 document.getElementById('user-display').innerText = currentUser;
-                
                 let next = problems.find(p => !solvedIds.includes(p.id)) || problems[0];
                 if(next) { openMainCats=[next.mainCat]; openSubCats=[next.subCat]; loadProblem(next.id); }
                 renderList();
             });
-        } catch(e) { alert("연결 실패! 인터넷 혹은 깃허브 저장소 이름을 확인하세요."); }
+        } catch(e) { alert("연결 실패! 인터넷 연결 상태를 확인하세요."); }
     }
 
     function renderList() {
@@ -197,15 +186,17 @@
         const tree = {};
         problems.forEach(p => { if(!tree[p.mainCat]) tree[p.mainCat] = {}; if(!tree[p.mainCat][p.subCat]) tree[p.mainCat][p.subCat] = []; tree[p.mainCat][p.subCat].push(p); });
         for(const m in tree) {
-            let mDiv = document.createElement('div'); mDiv.className=`main-cat-header`; mDiv.innerText=m;
-            mDiv.onclick=()=>{ openMainCats.includes(m)?openMainCats=openMainCats.filter(x=>x!=m):openMainCats.push(m); renderList(); };
+            const mOpen = openMainCats.includes(m);
+            const mDiv = document.createElement('div'); mDiv.className=`main-cat-header`; mDiv.innerText=m;
+            mDiv.onclick = () => { mOpen ? openMainCats = openMainCats.filter(x=>x!=m) : openMainCats.push(m); renderList(); };
             root.appendChild(mDiv);
-            if(openMainCats.includes(m)) {
+            if(mOpen) {
                 for(const s in tree[m]) {
-                    let sDiv = document.createElement('div'); sDiv.className=`sub-cat-header`; sDiv.innerText=s;
-                    sDiv.onclick=()=>{ openSubCats.includes(s)?openSubCats=openSubCats.filter(x=>x!=s):openSubCats.push(s); renderList(); };
+                    const sOpen = openSubCats.includes(s);
+                    const sDiv = document.createElement('div'); sDiv.className=`sub-cat-header`; sDiv.innerText=s;
+                    sDiv.onclick = () => { sOpen ? openSubCats = openSubCats.filter(x=>x!=s) : openSubCats.push(s); renderList(); };
                     root.appendChild(sDiv);
-                    if(openSubCats.includes(s)) {
+                    if(sOpen) {
                         tree[m][s].forEach(p => {
                             let pDiv = document.createElement('div'); pDiv.className=`prob-item ${currentIdx==p.id?'active':''} ${solvedIds.includes(p.id)?'solved':''}`;
                             pDiv.innerText = (solvedIds.includes(p.id)?'✔ ':'') + p.title;
@@ -251,13 +242,7 @@
     function moveItem(idx, dir) { let target = idx + dir; if(target < 0 || target >= problems.length) return; let temp = problems[idx]; problems[idx] = problems[target]; problems[target] = temp; renderSortManager(); renderList(); }
     function deleteItem(idx) { if(confirm("삭제?")) { problems.splice(idx, 1); renderSortManager(); renderList(); } }
     function askPw(mode) { targetMode = mode; document.getElementById('pw-modal').style.display='flex'; }
-    function checkPw() {
-        if(document.getElementById('pw-input').value === ADMIN_PW) {
-            document.getElementById('pw-modal').style.display='none';
-            if(targetMode == 'dashboard') { document.getElementById('dashboard-panel').style.display='block'; showStats(); }
-            else { document.getElementById('admin-panel').style.display='block'; renderSortManager(); }
-        } else { alert("오류"); }
-    }
+    function checkPw() { if(document.getElementById('pw-input').value === ADMIN_PW) { document.getElementById('pw-modal').style.display='none'; if(targetMode == 'dashboard') { document.getElementById('dashboard-panel').style.display='block'; showStats(); } else { document.getElementById('admin-panel').style.display='block'; renderSortManager(); } } else { alert("오류"); } }
     async function showStats() {
         const body = document.getElementById('stats-body'); body.innerHTML = "로드 중...";
         const res = await fetch(`${MASTER_CLOUD_URL}?action=stats`);
@@ -268,11 +253,10 @@
         Object.keys(stats).forEach(n => { const cnt = stats[n].size; body.innerHTML += `<tr><td>${n}</td><td>${Math.floor((cnt/problems.length)*100)}%</td><td>${cnt}개</td></tr>`; });
     }
     function exportJson() { document.getElementById('json-io').value = JSON.stringify(problems, null, 2); alert("복사됨"); }
-    function closePwModal() { document.getElementById('pw-modal').style.display = 'none'; }
-    function closePanels() { document.querySelectorAll('.floating-panel').forEach(p=>p.style.display='none'); }
-    function login() { const n = document.getElementById('user-name').value.trim(); if(n) { localStorage.setItem('coden_user_v51', n); location.reload(); } }
-    function logout() { localStorage.removeItem('coden_user_v51'); location.reload(); }
+    function login() { const n = document.getElementById('user-name').value.trim(); if(n) { localStorage.setItem('coden_user_v60', n); location.reload(); } }
+    function logout() { localStorage.removeItem('coden_user_v60'); location.reload(); }
     function showHint() { alert("💡 힌트: " + problems.find(p => p.id === currentIdx).hint); }
+    function closePanels() { document.querySelectorAll('.floating-panel').forEach(p=>p.style.display='none'); }
 
     initApp();
 </script>
