@@ -50,12 +50,21 @@
         
         .btn-run { position: absolute; right: 25px; top: 15px; z-index: 100; background: #28a745; color: white; border: none; padding: 8px 20px; cursor: pointer; font-weight: bold; border-radius: 4px; }
 
+        /* 아코디언 탐색기 스타일 */
         .main-cat-header { padding: 12px 15px; font-size: 12px; font-weight: bold; color: #fff; background: #37373d; cursor: pointer; border-bottom: 1px solid #222; }
         .sub-cat-header { padding: 10px 15px 10px 30px; font-size: 12px; font-weight: bold; color: #999; background: #2d2d2d; cursor: pointer; border-bottom: 1px solid #222; }
         .prob-item { padding: 8px 15px 8px 50px; cursor: pointer; font-size: 13px; color: #aaa; border-bottom: 1px solid #282828; }
+        
+        /* [수정] 선택된 문제 강조 스타일 */
+        .prob-item.active { 
+            color: #ffffff !important; 
+            background-color: #094771 !important; /* VS Code 스타일의 진한 파란색 배경 */
+            font-weight: bold;
+        }
         .prob-item.solved { color: #28a745; font-weight: bold; }
+        .prob-item.solved.active { background-color: #094771 !important; color: #28a745 !important; }
 
-        /* [관리자 복구 스타일] */
+        /* 관리자 패널 스타일 */
         .floating-panel { display: none; position: fixed; top: 20px; left: 60px; right: 20px; bottom: 20px; background: #252526; border: 1px solid #444; border-radius: 12px; z-index: 1000; padding: 25px; overflow: hidden; }
         .admin-flex { display: flex; gap: 20px; height: calc(100% - 60px); }
         .admin-col { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #111; padding: 15px; border-radius: 8px; }
@@ -103,7 +112,6 @@
     <div class="explorer">
         <div style="padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
             <div style="font-size: 11px; color: #888; font-weight: bold;">EXPLORER</div>
-            <!-- [수정] onclick="location.reload()" 대신 refreshData() 호출 -->
             <i id="explorer-refresh-icon" class="fas fa-sync-alt" style="font-size: 10px; color: #555; cursor: pointer;" onclick="refreshData()" title="문제 새로고침"></i>
         </div>
         <div id="accordion-root" style="flex: 1; overflow-y: auto;"></div>
@@ -210,34 +218,22 @@
         });
     }
 
-    // [신규 기능] 문제 데이터만 새로고침 (로그아웃 안됨)
     async function refreshData() {
         const icon = document.getElementById('explorer-refresh-icon');
-        icon.classList.add('fa-spin'); // 회전 애니메이션 시작
-        
+        icon.classList.add('fa-spin');
         try {
             const sheetRes = await fetch(`${MASTER_CLOUD_URL}?action=getProblems`);
             const sheetProbs = await sheetRes.json();
-            
             const filesRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`);
             const files = await filesRes.json();
             const jsonUrls = files.filter(f => f.name.endsWith('.json')).map(f => f.download_url);
             let githubProbs = [];
             for(let url of jsonUrls) { githubProbs = [...githubProbs, ...(await (await fetch(url)).json())]; }
-            
             problems = [...sheetProbs, ...githubProbs].map((p, i) => ({ id: 80000 + i, ...p }));
-            
             const sRes = await fetch(`${MASTER_CLOUD_URL}?action=getSolved&name=${encodeURIComponent(currentUser)}`);
             solvedIds = (await sRes.json()).map(id => parseInt(id));
-            
             renderList();
-            console.log("Data Refreshed Successfully");
-        } catch(e) { 
-            console.error("Sync Error:", e);
-            alert("데이터 동기화 중 오류가 발생했습니다.");
-        } finally {
-            icon.classList.remove('fa-spin'); // 애니메이션 중지
-        }
+        } catch(e) { alert("동기화 오류"); } finally { icon.classList.remove('fa-spin'); }
     }
 
     async function login() {
@@ -246,9 +242,8 @@
         currentUser = n;
         document.getElementById('login-screen').style.display='none';
         document.getElementById('loader').style.display='flex';
-
         try {
-            await refreshData(); // 기존 로그인 로직의 데이터 페칭을 refreshData로 일원화
+            await refreshData();
             document.getElementById('loader').style.display = 'none'; 
             document.getElementById('main-app').style.display = 'flex';
             document.getElementById('user-display').innerText = currentUser;
@@ -295,6 +290,7 @@
                     if(openSubCats.includes(s)) {
                         tree[m][s].forEach(p => {
                             let pDiv = document.createElement('div'); 
+                            // [여기서 active 클래스가 적용됨]
                             pDiv.className=`prob-item ${currentIdx==p.id?'active':''} ${solvedIds.includes(p.id)?'solved':''}`;
                             pDiv.innerText = (solvedIds.includes(p.id)?'✔ ':'') + p.title; 
                             pDiv.onclick=()=>loadProblem(p.id); root.appendChild(pDiv);
@@ -384,35 +380,16 @@
     }
 
     function toggleAllChecks() { const cs = document.querySelectorAll('.p-check'); const all = Array.from(cs).every(c => c.checked); cs.forEach(c => c.checked = !all); }
-    
-    function deleteSelected() { 
-        const cs = document.querySelectorAll('.p-check:checked'); 
-        if(!confirm("선택한 문제를 목록에서 삭제하시겠습니까?")) return; 
-        const ids = Array.from(cs).map(c => parseInt(c.dataset.idx)).sort((a,b)=>b-a); 
-        ids.forEach(i => problems.splice(i, 1)); 
-        updateAll(); 
-    }
-
+    function deleteSelected() { const cs = document.querySelectorAll('.p-check:checked'); if(!confirm("삭제?")) return; const ids = Array.from(cs).map(c => parseInt(c.dataset.idx)).sort((a,b)=>b-a); ids.forEach(i => problems.splice(i, 1)); updateAll(); }
     function switchAdminTab(t) { 
         document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-        if(t==='prob') { 
-            document.getElementById('tab-prob').classList.add('active'); 
-            document.getElementById('admin-prob-view').style.display='block'; 
-            document.getElementById('admin-cat-view').style.display='none'; 
-            renderSortManager(); 
-        } else { 
-            document.getElementById('tab-cat').classList.add('active'); 
-            document.getElementById('admin-prob-view').style.display='none'; 
-            document.getElementById('admin-cat-view').style.display='block'; 
-            renderCatManager(); 
-        }
+        if(t==='prob') { document.getElementById('tab-prob').classList.add('active'); document.getElementById('admin-prob-view').style.display='block'; document.getElementById('admin-cat-view').style.display='none'; renderSortManager(); }
+        else { document.getElementById('tab-cat').classList.add('active'); document.getElementById('admin-prob-view').style.display='none'; document.getElementById('admin-cat-view').style.display='block'; renderCatManager(); }
     }
-
     function updateAll() { renderSortManager(); renderList(); }
-    function resetDataAndSync() { if(confirm("데이터를 초기화하고 서버에서 다시 불러오겠습니까?")) { location.reload(); } }
-    function applyTestJson() { try { const d = JSON.parse(document.getElementById('test-json-input').value); problems = [...d.map((p,i)=>({id:99000+i,...p})), ...problems]; renderList(); alert("테스트 데이터가 상단에 추가되었습니다."); closePanels(); } catch(e){alert("JSON 형식이 올바르지 않습니다.");} }
-    function exportJson() { const data = JSON.stringify(problems.map(({id, ...rest})=>rest), null, 2); document.getElementById('test-json-input').value = data; alert("JSON 데이터가 텍스트박스에 추출되었습니다."); }
-
+    function resetDataAndSync() { if(confirm("초기화?")) { location.reload(); } }
+    function applyTestJson() { try { const d = JSON.parse(document.getElementById('test-json-input').value); problems = [...d.map((p,i)=>({id:99000+i,...p})), ...problems]; renderList(); alert("적용됨"); closePanels(); } catch(e){alert("JSON 오류");} }
+    function exportJson() { const data = JSON.stringify(problems.map(({id, ...rest})=>rest), null, 2); document.getElementById('test-json-input').value = data; alert("추출됨"); }
     function closePanels() { document.querySelectorAll('.custom-modal, .floating-panel').forEach(p=>p.style.display='none'); }
 
     initApp();
