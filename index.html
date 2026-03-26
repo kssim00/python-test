@@ -103,7 +103,8 @@
     <div class="explorer">
         <div style="padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
             <div style="font-size: 11px; color: #888; font-weight: bold;">EXPLORER</div>
-            <i class="fas fa-sync-alt" style="font-size: 10px; color: #555; cursor: pointer;" onclick="location.reload()" title="새로고침"></i>
+            <!-- [수정] onclick="location.reload()" 대신 refreshData() 호출 -->
+            <i id="explorer-refresh-icon" class="fas fa-sync-alt" style="font-size: 10px; color: #555; cursor: pointer;" onclick="refreshData()" title="문제 새로고침"></i>
         </div>
         <div id="accordion-root" style="flex: 1; overflow-y: auto;"></div>
         <div id="progress-stats" style="padding: 15px 20px; font-size: 12px; color: #28a745; border-top: 1px solid #333; font-weight:bold;">성취도: 0%</div>
@@ -126,7 +127,7 @@
     </div>
 </div>
 
-<!-- 마스터 센터 (v1 기능 복구) -->
+<!-- 마스터 센터 -->
 <div id="admin-panel" class="floating-panel">
     <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h2>마스터 센터</h2><button onclick="closePanels()">닫기</button></div>
     <div class="admin-flex">
@@ -162,7 +163,7 @@
     </div>
 </div>
 
-<!-- 대시보드 (v8.1 복구) -->
+<!-- 대시보드 -->
 <div id="dashboard-panel" class="floating-panel">
     <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3>학급 성취도 리포트</h3><button onclick="closePanels()">닫기</button></div>
     <div style="flex:1; overflow-y:auto;">
@@ -209,13 +210,11 @@
         });
     }
 
-    async function login() {
-        const n = document.getElementById('user-name').value.trim();
-        if(!n) return;
-        currentUser = n;
-        document.getElementById('login-screen').style.display='none';
-        document.getElementById('loader').style.display='flex';
-
+    // [신규 기능] 문제 데이터만 새로고침 (로그아웃 안됨)
+    async function refreshData() {
+        const icon = document.getElementById('explorer-refresh-icon');
+        icon.classList.add('fa-spin'); // 회전 애니메이션 시작
+        
         try {
             const sheetRes = await fetch(`${MASTER_CLOUD_URL}?action=getProblems`);
             const sheetProbs = await sheetRes.json();
@@ -227,16 +226,34 @@
             for(let url of jsonUrls) { githubProbs = [...githubProbs, ...(await (await fetch(url)).json())]; }
             
             problems = [...sheetProbs, ...githubProbs].map((p, i) => ({ id: 80000 + i, ...p }));
-
+            
             const sRes = await fetch(`${MASTER_CLOUD_URL}?action=getSolved&name=${encodeURIComponent(currentUser)}`);
             solvedIds = (await sRes.json()).map(id => parseInt(id));
+            
+            renderList();
+            console.log("Data Refreshed Successfully");
+        } catch(e) { 
+            console.error("Sync Error:", e);
+            alert("데이터 동기화 중 오류가 발생했습니다.");
+        } finally {
+            icon.classList.remove('fa-spin'); // 애니메이션 중지
+        }
+    }
 
+    async function login() {
+        const n = document.getElementById('user-name').value.trim();
+        if(!n) return;
+        currentUser = n;
+        document.getElementById('login-screen').style.display='none';
+        document.getElementById('loader').style.display='flex';
+
+        try {
+            await refreshData(); // 기존 로그인 로직의 데이터 페칭을 refreshData로 일원화
             document.getElementById('loader').style.display = 'none'; 
             document.getElementById('main-app').style.display = 'flex';
             document.getElementById('user-display').innerText = currentUser;
-            renderList(); 
-            initResizing();
             if(problems.length > 0) loadProblem(problems[0].id);
+            initResizing();
         } catch(e) { console.error(e); }
     }
 
@@ -314,7 +331,6 @@
         } catch(e) { document.getElementById('output').innerText = "에러: " + e.message; }
     }
 
-    // [관리자 상세 기능 복구 로직]
     function askPw(mode) { targetMode = mode; document.getElementById('pw-modal').style.display = 'flex'; document.getElementById('pw-input').focus(); }
     function checkPw() {
         const i = document.getElementById('pw-input');
