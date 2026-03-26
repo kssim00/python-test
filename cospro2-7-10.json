@@ -1,4 +1,5 @@
-{
+[
+  {
   "mainCat": "COS PRO 2급",
   "subCat": "7차",
   "title": "[7 차] 문제 10",
@@ -6,3 +7,4 @@
   "initial": "def solution(arr, N):\n    return 0",
   "expected": "143"
 }
+]
