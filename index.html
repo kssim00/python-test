@@ -2,8 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>CODE:N 파이썬 스튜디오 (v10.0)</title>
-    <!-- 라이브러리: 가장 안정적인 버전 고정 -->
+    <title>CODE:N 파이썬 스튜디오 (v10.1)</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/loader.min.js"></script>
     <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
@@ -11,7 +10,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        /* 1. v8.1 레이아웃 및 디자인 복구 */
         :root { --vscode-bg: #1e1e1e; --vscode-side: #252526; --vscode-accent: #007acc; --vscode-text: #cccccc; }
         html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: var(--vscode-bg); color: var(--vscode-text); font-family: 'Pretendard', sans-serif; }
         .app-wrapper { display: none; height: 100vh; width: 100vw; overflow: hidden; display: flex; }
@@ -31,17 +29,16 @@
         .explorer { width: 250px; background: var(--vscode-side); border-right: 1px solid #333; display: flex; flex-direction: column; flex-shrink: 0; }
         .main-content { flex: 1; display: flex; overflow: hidden; position: relative; }
         
-        /* 2. 지문 스마트 포맷팅 최적화 */
         .description-panel { width: 400px; min-width: 150px; padding: 25px; border-right: 1px solid #333; background: #1e1e1e; overflow-y: auto; flex-shrink: 0; box-sizing: border-box; }
         .desc-section-title { font-weight: bold; color: #fff; margin: 25px 0 10px 0; font-size: 16px; border-left: 5px solid var(--vscode-accent); padding-left: 12px; line-height: 1.2; }
         .desc-text { line-height: 1.8; color: #ccc; font-size: 14.5px; margin-bottom: 12px; white-space: pre-wrap; }
         .example-box { background: #2d2d2d; border-radius: 8px; padding: 15px; border: 1px solid #444; color: #eee; font-family: 'Courier New', monospace; margin: 12px 0; }
-        .description-panel table { border-collapse: collapse; border: 1px solid #444; background: #252526; margin: 10px 0; }
+        
+        .description-panel table { border-collapse: collapse; border: 1px solid #444; background: #252526; margin: 10px 0; width: auto; }
         .description-panel th, .description-panel td { border: 1px solid #444; padding: 8px; text-align: center; color: #ccc; font-size: 13px; }
         .bg-yellow { background-color: #f1c40f !important; color: black !important; font-weight: bold; }
         .bg-blue { background-color: #3498db !important; color: white !important; }
 
-        /* 3. 리사이저 및 인터렉션 */
         .resizer-h { width: 8px; cursor: col-resize; background: transparent; z-index: 50; margin: 0 -4px; }
         .resizer-h:hover { background: rgba(0, 122, 204, 0.4); }
         .resizer-v { height: 10px; cursor: row-resize; background: transparent; z-index: 60; margin: -5px 0; position: relative; }
@@ -61,7 +58,6 @@
         .prob-item { padding: 8px 15px 8px 50px; cursor: pointer; font-size: 13px; color: #aaa; border-bottom: 1px solid #282828; }
         .prob-item.solved { color: #28a745; font-weight: bold; }
 
-        /* 4. 로그인 화면 디자인 보정 (버튼과 입력창 사이즈 일치) */
         .admin-input { background: #3c3c3c; border: 1px solid #555; color: white; padding: 12px; width: 100%; box-sizing: border-box; border-radius: 4px; margin-bottom: 10px; text-align: center; font-size: 14px; }
         .login-btn { width: 100%; background: #007acc; color: white; border: none; padding: 12px; cursor: pointer; font-weight: bold; border-radius: 4px; }
         
@@ -72,13 +68,10 @@
 </head>
 <body onselectstart="return !isDragging">
 
-<!-- F5 시 세션 초기화 -->
 <script>localStorage.removeItem('coden_user_v81');</script>
 
-<!-- 초기 로더 (v10.0에서는 순식간에 사라짐) -->
-<div id="loader" class="overlay"><div class="spinner"></div><b id="loader-msg">스튜디오 준비 중...</b></div>
+<div id="loader" class="overlay"><div class="spinner"></div><b id="loader-msg">데이터 로드 중...</b></div>
 
-<!-- 관리자 모달 -->
 <div id="pw-modal" class="custom-modal">
     <div class="modal-box">
         <h3 style="color:white; margin-top:0;">관리자 인증</h3>
@@ -87,7 +80,6 @@
     </div>
 </div>
 
-<!-- 로그인 화면 -->
 <div id="login-screen" class="overlay" style="display:none;">
     <div style="background:#252526; padding:40px; border-radius:15px; width:300px; text-align:center; border:1px solid #444;">
         <h2 style="color:white; margin-bottom:20px;">코드:앤 파이썬 스튜디오</h2>
@@ -132,7 +124,6 @@
     </div>
 </div>
 
-<!-- 패널 복구 -->
 <div id="admin-panel" class="floating-panel">
     <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h3>마스터 센터</h3><button onclick="closePanels()">닫기</button></div>
     <div id="admin-prob-body" style="flex:1; overflow-y:auto;"></div>
@@ -146,10 +137,11 @@
     const MASTER_CLOUD_URL = "https://script.google.com/macros/s/AKfycbxECzN-NGJWsrx466aoGcodQICqQY2UeNVBJ4_CR8gyxi2TerpznaZAX7xCLw530Yk1/exec";
     const GITHUB_USER = "kssim00", GITHUB_REPO = "python-test-V2", ADMIN_PW = "1234";
 
+    // 변수 선언 (v10.1 수정: 누락된 변수 추가)
     let problems = [], solvedIds = [], currentIdx = -1, pyodide, editor, isDragging = false;
-    let currentUser = "", targetMode = "";
+    let openMainCats = [], openSubCats = [], targetMode = "";
+    let currentUser = "";
 
-    // [v9.9 그대로] 지문 스마트 포맷팅
     function smartFormatDesc(text) {
         if (!text) return "";
         let html = "", isExample = false;
@@ -166,20 +158,17 @@
         return html;
     }
 
-    // [v10.0 핵심] 로딩 멈춤 방지 엔진
     async function initApp() {
         document.getElementById('loader').style.display='none';
         document.getElementById('login-screen').style.display='flex';
         
-        // 에디터 엔진은 백그라운드에서 로드 (차단 방지)
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs' }});
         require(['vs/editor/editor.main'], async function() {
             editor = monaco.editor.create(document.getElementById('editor-container'), { 
                 value: "", language: 'python', theme: 'vs-dark', fontSize: 16, automaticLayout: true, minimap: { enabled: false }
             });
             pyodide = await loadPyodide();
-            const runBtn = document.getElementById('run-btn');
-            if(runBtn) runBtn.classList.add('ready');
+            const rb = document.getElementById('run-btn'); if(rb) rb.classList.add('ready');
         });
     }
 
@@ -189,21 +178,15 @@
         currentUser = n;
         document.getElementById('login-screen').style.display='none';
         document.getElementById('loader').style.display='flex';
-        document.getElementById('loader-msg').innerText = "데이터 동기화 중...";
 
         try {
-            // 구글 시트 + 깃허브 하이브리드 로딩
             const sheetRes = await fetch(`${MASTER_CLOUD_URL}?action=getProblems`);
             const sheetProbs = await sheetRes.json();
-            
             const filesRes = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`);
             const files = await filesRes.json();
             const jsonUrls = files.filter(f => f.name.endsWith('.json')).map(f => f.download_url);
             let githubProbs = [];
-            for(let url of jsonUrls) { 
-                const res = await fetch(url);
-                githubProbs = [...githubProbs, ...(await res.json())]; 
-            }
+            for(let url of jsonUrls) { const res = await fetch(url); githubProbs = [...githubProbs, ...(await res.json())]; }
             
             problems = [...sheetProbs, ...githubProbs].map((p, i) => ({ id: 80000 + i, ...p }));
             const sRes = await fetch(`${MASTER_CLOUD_URL}?action=getSolved&name=${encodeURIComponent(currentUser)}`);
@@ -217,7 +200,6 @@
         } catch(e) { alert("데이터 로드 실패: " + e.message); }
     }
 
-    // [v8.1] 리사이저 감지 및 동작
     function initResizing() {
         const h = document.getElementById('resizer-h'), v = document.getElementById('resizer-v'), pD = document.getElementById('panel-desc'), pT = document.getElementById('panel-terminal');
         h.onmousedown = (e) => { 
@@ -226,7 +208,7 @@
                 let w = e.clientX - 300; 
                 if (w > 150 && w < window.innerWidth-400) { pD.style.width = w+"px"; editor.layout(); }
             };
-            const upH = () => { isDragging = false; window.removeEventListener('mousemove', moveH); };
+            const upH = () => { isDragging = false; window.removeEventListener('mousemove', moveH); window.removeEventListener('mouseup', upH); };
             window.addEventListener('mousemove', moveH); window.addEventListener('mouseup', upH);
         };
         v.onmousedown = (e) => { 
@@ -235,7 +217,7 @@
                 let h = window.innerHeight - e.clientY;
                 if (h > 35 && h < window.innerHeight-150) { pT.style.height = h+"px"; editor.layout(); }
             };
-            const upV = () => { isDragging = false; window.removeEventListener('mousemove', moveV); };
+            const upV = () => { isDragging = false; window.removeEventListener('mousemove', moveV); window.removeEventListener('mouseup', upV); };
             window.addEventListener('mousemove', moveV); window.addEventListener('mouseup', upV);
         };
     }
@@ -294,13 +276,8 @@
     function askPw(mode) { targetMode = mode; document.getElementById('pw-modal').style.display = 'flex'; document.getElementById('pw-input').focus(); }
     function checkPw() {
         const i = document.getElementById('pw-input');
-        if(i.value === ADMIN_PW) { 
-            i.value = ""; closePanels(); 
-            if(targetMode === 'dashboard') showStats();
-            else showMaster();
-        } else { i.value = ""; }
+        if(i.value === ADMIN_PW) { i.value = ""; closePanels(); if(targetMode === 'dashboard') showStats(); else showMaster(); } else { i.value = ""; }
     }
-
     async function showStats() {
         document.getElementById('dashboard-panel').style.display = 'block';
         const body = document.getElementById('stats-body'); body.innerHTML = "조회 중...";
@@ -313,7 +290,6 @@
             body.innerHTML += `<tr><td>${n}</td><td>${Math.floor((cnt/problems.length)*100)}%</td><td><i class="fas fa-file-invoice" style="cursor:pointer; color:#007acc;" onclick="alert('${n} 학생 리포트')"></i></td></tr>`;
         });
     }
-
     function showMaster() {
         document.getElementById('admin-panel').style.display = 'block';
         const body = document.getElementById('admin-prob-body');
@@ -321,7 +297,6 @@
         const list = document.getElementById('m-list');
         problems.forEach(p => { list.innerHTML += `<tr><td>${p.id}</td><td>${p.subCat}</td><td>${p.title}</td></tr>`; });
     }
-
     function closePanels() { document.querySelectorAll('.custom-modal, .floating-panel').forEach(p=>p.style.display='none'); }
 
     initApp();
