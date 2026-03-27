@@ -1,0 +1,92 @@
+[
+  {
+    "id": 32401,
+    "mainCat": "PYTHON 3급",
+    "subCat": "기출(24년)",
+    "title": "[문제 01]",
+    "desc": "<div class='desc-text'>· 7에서부터 3씩 더한 5개를 나열하면 결과는 7 10 13 16 19입니다.</div><div class='desc-text'>K에 3씩 더하여 크기가 작은 순으로 n개 출력하려 합니다.</div><div class='desc-text'>두 자연수 k 와 n 을 전달받아, k에 3씩 더하여 크기가 작은 순서대로 n개 출력해주세요.</div><div class='desc-section-title'>입력 설명</div><div class='desc-text'>두 자연수 k와 n이 주어집니다.<br>-k는 2이상 100이하인 자연수입니다<br>-n은 1이상 100이하인 자연수입니다</div><div class='desc-section-title'>출력 설명</div><div class='desc-text'>-K에 3씩 더하여 크기가 작은 순서대로 n개 만큼 출력해주세요.</div><div class='desc-section-title'>예제</div><table><tr><th>k</th><th>n</th><th>result</th></tr><tr><td>7</td><td>5</td><td>7 10 13 16 19</td></tr></table>",
+    "initial": "# 여기에 코드를 작성해 주세요.",
+    "expected": "7 10 13 16 19"
+  },
+  {
+    "id": 32402,
+    "mainCat": "PYTHON 3급",
+    "subCat": "기출(24년)",
+    "title": "[문제 02]",
+    "desc": "<div class='desc-text'>7보다 이전에 있는 숫자의 개수를 출력하려 합니다.</div><div class='desc-text'>숫자 정보를 가지는 리스트 n을 전달받아, 7보다 이전에 있는 숫자의 개수를 출력해주세요.</div><div class='desc-section-title'>입력 설명</div><div class='desc-text'>숫자 정보를 가지고 있는 리스트 n이 주어집니다.<br>-숫자는 1이상 100이하인 자연수입니다<br>-숫자 리스트의 크기는 1개 이상 10000개 이하입니다.<br>-7은 한번 입력되어 있습니다.</div><div class='desc-section-title'>출력 설명</div><div class='desc-text'>- 7보다 이전에 있는 숫자의 개수를 세어 출력해주세요</div><div class='desc-section-title'>예제</div><table><tr><th>n</th><th>result</th></tr><tr><td>14 45 50 3 7 11 5 23 9 80</td><td>4</td></tr></table><div class='desc-text' style='margin-top:10px;'>· 7보다 이전에 있는 숫자는 14, 45, 50, 3입니다. 따라서 4를 출력합니다.</div>",
+    "initial": "# 여기에 코드를 작성해 주세요.",
+    "expected": "4"
+  },
+  {
+    "id": 32403,
+    "mainCat": "PYTHON 3급",
+    "subCat": "기출(24년)",
+    "title": "[문제 03]",
+    "desc": "<div class='desc-text'>숫자 두개를 전달받아, 두 수 중 더 작은 수를 출력해주세요.</div><div class='desc-section-title'>입력 설명</div><div class='desc-text'>숫자 두개가 주어집니다.<br>- 두 수는 -1000이상 1000이하인 정수입니다.<br>- 두 숫자는 같지 않습니다.</div><div class='desc-section-title'>출력 설명</div><div class='desc-text'>두 수 중 더 작은 숫자를 출력해주세요.</div><div class='desc-section-title'>예제</div><table><tr><th>n1</th><th>n2</th><th>result</th></tr><tr><td>27</td><td>64</td><td>27</td></tr></table><div class='desc-text' style='margin-top:10px;'>• 27과 64중에서 더 작은 수는 27이므로 27을 출력합니다.</div>",
+    "initial": "# 여기에 코드를 작성해 주세요.",
+    "expected": "27"
+  },
+  {
+    "id": 32404,
+    "mainCat": "PYTHON 3급",
+    "subCat": "기출(24년)",
+    "title": "[문제 04]",
+    "desc": "<div class='desc-text'>리스트 arr의 원소 중 짝수 위치에 있는 숫자를 더한 값을 구하려 합니다.</div><div class='desc-text'>리스트 arr을 전달받아 arr의 원소 중 짝수 위치모두에 있는 숫자를 모두 더한 값을 출력하도록 코드를 작성하려 합니다. 빈칸을 채워 전체 코드를 완성해주세요.</div><div class='desc-section-title'>입력 설명</div><div class='desc-text'>자연수 n과 숫자로 구성된 리스트 arr이 주어집니다.<br>- n은 1이상 100,000이하인 자연수입니다.<br>- 리스트의 모든 원소는 0이상 1,000이하인 정수입니다.</div><div class='desc-section-title'>출력 설명</div><div class='desc-text'>리스트 arr의 원소 중 짝수 위치에 있는 숫자를 모두 더한 값을 출력해주세요</div><div class='desc-section-title'>예시</div><table><tr><th>N</th><th>arr</th><th>result</th></tr><tr><td>7</td><td>41 23 27 0 12 36 30</td><td>59</td></tr></table><div class='desc-text' style='margin-top:10px;'>• (23+0+36=59이므로 59가 출력된다)</div>",
+    "initial": "n = int(input())\narr = list(map(int, input().split()))\n\nsum = 0\nfor i in range(1, n, 2):\n    @@@\n    \nprint(\"%d\" % sum)",
+    "expected": "59"
+  },
+  {
+    "id": 32405,
+    "mainCat": "PYTHON 3급",
+    "subCat": "기출(24년)",
+    "title": "[문제 05]",
+    "desc": "<div class='desc-text'>하이픈(-)과 별(*)모양을 교차하여 출력하려 합니다.</div><div class='desc-text'>자연수 n을 전달받아 하이픈 모양은 0부터 n-1까지 1씩 커지고 별모양은 n부터 1까지 1씩 작아지면서 모양을 교차하여 출력해주세요.</div><div class='desc-section-title'>출력</div><div class='example-box'>*****_****__***___**____*</div><div class='desc-text'>자연수 n을 전달 받아 하이픈( _ )과 별( * )모양을 교차하여 출력해주세요.</div><div class='desc-section-title'>입력 설명</div><div class='desc-text'>자연수 n이 주어집니다.<br>-n은 2이상 100이하인 자연수입니다.</div><div class='desc-section-title'>출력 설명</div><div class='desc-text'>자연수 n에 따라 하이픈(-)과 별(*)모양을 교차하여 출력해주세요.</div><div class='desc-section-title'>기준</div><table><tr><th>하이픈(-) 모양</th><th>별(*)모양</th></tr><tr><td>0</td><td>5</td></tr><tr><td>1</td><td>4</td></tr><tr><td>2</td><td>3</td></tr><tr><td>3</td><td>2</td></tr><tr><td>4</td><td>1</td></tr></table>",
+    "initial": "# 여기에 코드를 작성해 주세요.",
+    "expected": "*****_****__***___**____*"
+  },
+  {
+    "id": 32406,
+    "mainCat": "PYTHON 3급",
+    "subCat": "기출(24년)",
+    "title": "[문제 06]",
+    "desc": "<div class='desc-text'>문자열에 포함된 알파벳 소문자의 개수를 구하려 합니다.</div><div class='desc-text'>문자열을 전달받아, 문자열에 포함된 알파벳 소문자의 개수를 출력하도록 코드를 작성하려 합니다. 빈칸을 채워 전체 코드를 완성해주세요.</div><div class='desc-section-title'>입력 설명</div><div class='desc-text'>문자열 하나가 주어집니다.<br>-주어지는 문자는 알파벳 대문자 혹은 소문자입니다.<br>-문자열의 길이는 1이상 100이하입니다.</div><div class='desc-section-title'>출력 설명</div><div class='desc-text'>입력받은 문자열에 포함된 알파벳 소문자의 개수를 출력해주세요.</div><div class='desc-section-title'>예제</div><table><tr><th>str</th><th>result</th></tr><tr><td>LOGic</td><td>2</td></tr></table><div class='desc-text' style='margin-top:10px;'>문자열에 포함된 알파벳 소문자는 i , c 이므로 2를 출력합니다.</div>",
+    "initial": "counter = 0\nstr = input()\n\nfor i in range(0, len(str)):\n    if @@@@@@@@@@@@@@@@@@@@@@:\n        counter += 1\n        \nprint(\"%d\" % counter)",
+    "expected": "2"
+  },
+  {
+    "id": 32407,
+    "mainCat": "PYTHON 3급",
+    "subCat": "기출(24년)",
+    "title": "[문제 07]",
+    "desc": "<div class='desc-text'>특수문자(&)가 포함된 문자열을 나타내려 합니다.</div><div class='desc-text'>문자열 두개를 전달받아 첫번째 문자열과 두번째 문자열 사이에 특수문자(&)그 사이에 특수문자를 포함하여 출력하도록 코드를 작성하려 합니다. 빈칸을 채워 전체 코드를 완성해주세요.</div><div class='desc-section-title'>입력 설명</div><div class='desc-text'>문자열 2개가 주어집니다.<br>-두 문자열은 알파벳 소문자로만 이루어집니다<br>-두 문자열의 길이는 1이상 100이하입니다</div><div class='desc-section-title'>출력 설명</div><div class='desc-text'>전달받은 첫 번째 문자열과 두번째 문자열 사이에 특수문자를($) 포함해서 출력해주세요.</div><div class='desc-section-title'>예제</div><table><tr><th>str1</th><th>str2</th><th>Result</th></tr><tr><td>peach</td><td>lemon</td><td>peach&lemon</td></tr></table>",
+    "initial": "str1 = input()\nstr2 = input()\n\nprint(@@@@@)",
+    "expected": "peach&lemon"
+  },
+  {
+    "id": 32408,
+    "mainCat": "PYTHON 3급",
+    "subCat": "기출(24년)",
+    "title": "[문제 08]",
+    "desc": "<div class='desc-text'>두 문자열 중 영어사전 순으로 뒤에 오는 문자열을 구하려 합니다.</div><div class='desc-text'>문자열 두 개를 전달받아 영어사전 순으로 뒤에 있는 문자열을 출력하도록 코드를 작성하려 합니다. 빈칸을 채워 전체 코드를 완성해주세요.</div><div class='desc-section-title'>입력 설명</div><div class='desc-text'>문자열 두 개가 주어집니다.<br>-두 문자열 길이는 1이상 100 이하입니다.<br>-두 문자열은 알파벳 소문자로만 이루어져 있습니다.</div><div class='desc-section-title'>출력 설명</div><div class='desc-text'>두 문자열 중 영어사전 순으로 뒤에 오는 문자열을 출력해주세요.</div><div class='desc-section-title'>예제</div><table><tr><th>str1</th><th>str2</th><th>Result</th></tr><tr><td>yellow</td><td>green</td><td>yellow</td></tr></table>",
+    "initial": "str1 = input()\nstr2 = input()\n\nprint(@@@@@)",
+    "expected": "yellow"
+  },
+  {
+    "id": 32409,
+    "mainCat": "PYTHON 3급",
+    "subCat": "기출(24년)",
+    "title": "[문제 09]",
+    "desc": "<div class='desc-text'>문자열의 한 글자씩 증가하는 부분 문자열을 순서대로 한줄씩 출력하려 합니다.</div><div class='desc-text'>문자열 한 개를 전달받아 한 글자씩 증가하는 부분 문자열을 공백으로 구분하여 순서대로 출력하도록 코드를 작성하려 합니다. 빈칸을 채워 전체 코드를 완성해주세요.</div><div class='desc-section-title'>입력 설명</div><div class='desc-text'>한 개의 문자열이 주어집니다<br>- 문자열 길이는 1이상 100이하입니다.<br>- 문자열은 알파벳 소문자와 대문자로만 이루어져 있습니다.</div><div class='desc-section-title'>출력 설명</div><div class='desc-text'>전달받은 문자열을 한 글자씩 증가하는 부분 문자열을 공백으로 구분하여 순서대로 출력해주세요</div><div class='desc-section-title'>예제</div><table><tr><th>str</th><th>result</th></tr><tr><td>IoT</td><td>I Io IoT</td></tr></table><div class='desc-text' style='margin-top:10px;'>입력받은 문자열 IoT의 한글자씩 증가하는 부분 문자열을 공백으로 구분하여 순서대로 출력합니다.</div>",
+    "initial": "str = input()\n\nfor i in range(0, len(str)):\n    for j in range(@@@):\n        print(\"%s\" % str[j], end=\"\")\n    print(end= \" \")",
+    "expected": "I Io IoT "
+  },
+  {
+    "id": 32410,
+    "mainCat": "PYTHON 3급",
+    "subCat": "기출(24년)",
+    "title": "[문제 10]",
+    "desc": "<div class='desc-text'>두 수의 차이 값의 절댓값을 구하려 합니다.</div><div class='desc-text'>숫자 두 개를 전달받아 두 수의 차이 값의 절댓값을 출력해주세요.</div><div class='desc-section-title'>입력 설명</div><div class='desc-text'>숫자 두 개가 주어집니다.<br>-수는 -1,000 이상 1,000 이하인 정수입니다.</div><div class='desc-section-title'>출력 설명</div><div class='desc-text'>전달받은 두 수의 차이 값을 구하고 그 결괏값에 절댓값을 출력해주세요.</div><div class='desc-section-title'>예제</div><table><tr><th>n1</th><th>n2</th><th>result</th></tr><tr><td>2</td><td>5</td><td>3</td></tr></table><div class='desc-text' style='margin-top:10px;'>• 2와 5의 차이 값은 -3이고 그 결과에 절댓값은 3이므로 3을 출력합니다.</div>",
+    "initial": "# 여기에 코드를 작성해 주세요.",
+    "expected": "3"
+  }
+]
