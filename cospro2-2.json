@@ -1,0 +1,102 @@
+[
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "2차",
+    "id": 2001,
+    "title": "[2 차] 문제 1",
+    "desc": "<div class='desc-text'>왼손 장갑의 제품 번호가 들어 있는 리스트와 오른손 장갑의 제품 번호가 들어 있는 리스트가 있습니다. 제품 번호는 1 부터 10 사이의 자연수입니다. 제품 번호가 같은 왼손 장갑과 오른손 장갑을 합쳐 장갑 한 쌍을 만들 수 있습니다.<br><br>이때, 최대한 많은 쌍의 장갑을 만들면 최대 몇 쌍을 만들 수 있는지 구하려 합니다. 이를 위해 다음과 같이 프로그램 구조를 작성했습니다.<br><br>1. 왼손 장갑이 제품 번호별로 몇 개씩 있는지 개수를 셉니다.<br>2. 오른손 장갑이 제품 번호별로 몇 개씩 있는지 개수를 셉니다.<br>3. 각 제품 번호별로 최대한 많은 장갑 쌍을 만들면서 개수를 셉니다.<br><br>왼손 장갑의 제품 번호가 들어 있는 리스트 leftGloves 와 오른손 장갑의 제품 번호가 들어 있는 리스트 rightGloves 가 매개변수로 주어질 때, 최대 몇 개의 장갑 쌍을 만들 수 있는지 return 하도록 solution 함수를 작성하려 합니다. 이때, 위 구조를 참고하여 중복되는 부분은 func_a 라는 함수로 작성했습니다. 코드가 올바르게 동작할 수 있도록 빈칸을 알맞게 채워주세요.</div><div class='desc-section-title'>매개변수 설명</div><div class='desc-text'>왼손 장갑의 제품 번호가 들어 있는 리스트 leftGloves와 오른손 장갑의 제품 번호가 들어 있는 리스트 rightGloves가 solution 함수의 매개변수로 주어집니다.<br>* leftGloves의 길이는 1 이상 100 이하입니다.<br>* leftGloves의 원소는 1 이상 10 이하의 자연수입니다.<br>* rightGloves의 길이는 1 이상 100 이하입니다.<br>* rightGloves의 원소는 1 이상 10 이하의 자연수입니다.</div><div class='desc-section-title'>Return 값 설명</div><div class='desc-text'>왼손과 오른손의 제품 번호가 같은 장갑끼리 한 쌍을 만들 때, 최대 몇 개의 쌍을 만들 수 있는지 개수를 return 해 주세요.</div><div class='desc-section-title'>예시</div><table class='desc-table'><thead><tr><th>leftGloves</th><th>rightGloves</th><th>return</th></tr></thead><tbody><tr><td>[2, 1, 2, 2, 4]</td><td>[1, 2, 2, 4, 4, 7]</td><td>4</td></tr></tbody></table><div class='desc-section-title'>예시 설명</div><div class='desc-text'>예시 #1<br>왼손 장갑 : 1 번 장갑 1 개, 2 번 장갑 3 개, 4 번 장갑 1 개가 있습니다.<br>오른손 장갑 : 1 번 장갑 1 개, 2 번 장갑 2 개, 4 번 장갑 2 개, 7 번 장갑 1 개가 있습니다.<br>따라서 1 번 장갑 한 쌍, 2 번 장갑 두 쌍, 4 번 장갑 한 쌍을 만들면 최대 4 개의 장갑 쌍을 만들 수 있습니다.</div>",
+    "expected": "solution 함수의 반환 값은 4 입니다.",
+    "initial": "max_product_number = 10\n\ndef func_a(gloves):\n    counter = [0 for _ in range(max_product_number + 1)]\n    for x in gloves:\n        ____\n    return counter\n\ndef solution(left_gloves, right_gloves):\n    left_counter = func_a(left_gloves)\n    right_counter = func_a(right_gloves)\n    \n    total = 0\n    for i in range(1, max_product_number + 1):\n        total += min(left_counter[i], right_counter[i])\n    return total\n\n#아래는 테스트케이스 출력을 해보기 위한 코드입니다.\nleft_gloves = [2, 1, 2, 2, 4]\nright_gloves = [1, 2, 2, 4, 4, 7]\nret = solution(left_gloves, right_gloves)\n\n#[실행] 버튼을 누르면 출력 값을 볼 수 있습니다.\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+    "hint": "리스트 counter의 x번째 인덱스 값을 1씩 더하여 개수를 셉니다."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "2차",
+    "id": 2002,
+    "title": "[2 차] 문제 2",
+    "desc": "<div class='desc-text'>자연수가 들어 있는 리스트에 3 의 배수와 5 의 배수 중 어떤 수가 더 많은지 알아보려 합니다. 이를 위해 다음과 같이 프로그램 구조를 작성했습니다.<br><br>1. 3 의 배수의 개수를 셉니다.<br>2. 5 의 배수의 개수를 셉니다.<br>3. 3 의 배수와 5 의 배수의 개수를 비교 후 다음을 수행합니다.<br> 3-1. 만약 3 의 배수가 더 많다면 \"three\"를 return 합니다.<br> 3-2. 만약 5 의 배수가 더 많다면 \"five\"를 return 합니다.<br> 3-3. 만약 3 의 배수와 5 의 배수의 개수가 같다면 \"same\"을 return 합니다.<br><br>자연수가 들어 있는 리스트 arr 가 매개변수로 주어질 때, 리스트에 3 의 배수의 개수가 더 많다면 \"three\"를, 5 의 배수의 개수가 더 많다면 \"five\"를, 3 의 배수와 5 의 배수의 개수가 같다면 \"same\"을 return 하도록 solution 함수를 작성하려 합니다.<br><br>위 구조를 참고하여 코드가 올바르게 동작할 수 있도록 빈칸에 주어진 func_a, func_b, func_c 함수와 매개변수를 알맞게 채워주세요.</div><div class='desc-section-title'>매개변수 설명</div><div class='desc-text'>자연수가 들어 있는 리스트 arr가 solution 함수의 매개변수로 주어집니다.<br>* arr의 길이는 1 이상 100 이하입니다.<br>* arr에 들어 있는 숫자는 1 이상 1,000 이하의 자연수입니다.</div><div class='desc-section-title'>Return 값 설명</div><div class='desc-text'>리스트에 3 의 배수의 개수가 더 많다면 \"three\"를, 5 의 배수의 개수가 더 많다면 \"five\"를, 3 의 배수와 5 의 배수의 개수가 같다면 \"same\"을 return 해 주세요.</div><div class='desc-section-title'>예시</div><table class='desc-table'><thead><tr><th>arr</th><th>return</th></tr></thead><tbody><tr><td>[2, 3, 6, 9, 12, 15, 10, 20, 22, 25]</td><td>\"three\"</td></tr></tbody></table><div class='desc-section-title'>예시 설명</div><div class='desc-text'>* 3 의 배수 : 3, 6, 9, 12, 15<br>* 5 의 배수 : 10, 15, 20, 25<br>3 의 배수는 5 개, 5 의 배수는 4 개이므로 3 의 배수가 더 많습니다. 따라서 \"three\"를 return 합니다.</div>",
+    "expected": "solution 함수의 반환 값은 three 입니다.",
+    "initial": "def func_a(arr):\n    count = 0\n    for n in arr:\n        if n % 5 == 0:\n            count += 1\n    return count\n\ndef func_b(three, five):\n    if three > five:\n        return \"three\"\n    elif three < five:\n        return \"five\"\n    else:\n        return \"same\"\n\ndef func_c(arr):\n    count = 0\n    for n in arr:\n        if n % 3 == 0:\n            count += 1\n    return count\n\ndef solution(arr):\n    count_three = func_____(_____)\n    count_five = func_____(_____)\n    answer = func_____(_____, _____)\n    return answer\n\n#아래는 테스트케이스 출력을 해보기 위한 코드입니다.\narr = [2, 3, 6, 9, 12, 15, 10, 20, 22, 25]\nret = solution(arr)\n\n#[실행] 버튼을 누르면 출력 값을 볼 수 있습니다.\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+    "hint": "func_c는 3의 배수, func_a는 5의 배수를 세는 함수입니다."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "2차",
+    "id": 2003,
+    "title": "[2 차] 문제 3",
+    "desc": "<div class='desc-text'>서로 다른 두 자연수 N 과 M 이 매개변수로 주어질 때, N 부터 M 까지의 자연수 중에서 짝수들의 제곱의 합을 return 하도록 solution 함수를 완성해 주세요.</div><div class='desc-section-title'>매개변수 설명</div><div class='desc-text'>두 자연수 N과 M이 solution 함수의 매개변수로 주어집니다.<br>* N과 M은 1 이상 1,000 이하의 자연수이며, N < M을 항상 만족합니다.</div><div class='desc-section-title'>Return 값 설명</div><div class='desc-text'>N 부터 M 까지의 수 중에서 짝수인 수의 제곱의 합을 return 해 주세요.</div><div class='desc-section-title'>예시</div><table class='desc-table'><thead><tr><th>N</th><th>M</th><th>return</th></tr></thead><tbody><tr><td>4</td><td>7</td><td>52</td></tr></tbody></table><div class='desc-section-title'>예시 설명</div><div class='desc-text'>4 부터 7 까지의 자연수 중에서 짝수는 4 와 6 입니다.<br>* 4^2 + 6^2 = 16 + 36 = 52<br>따라서 52 를 return 하면 됩니다.</div>",
+    "expected": "solution 함수의 반환 값은 52 입니다.",
+    "initial": "#다음과 같이 import를 사용할 수 있습니다.\n#import math\n\ndef solution(N, M):\n    #여기에 코드를 작성해주세요.\n    answer = 0\n    return answer\n\n#아래는 테스트케이스 출력을 해보기 위한 코드입니다.\nN = 4\nM = 7\nret = solution(N, M)\n\n#[실행] 버튼을 누르면 출력 값을 볼 수 있습니다.\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+    "hint": "range(N, M + 1) 범위를 반복하며 짝수인지 확인(i % 2 == 0) 하세요."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "2차",
+    "id": 2004,
+    "title": "[2 차] 문제 4",
+    "desc": "<div class='desc-text'>단어들이 들어 있는 리스트에서 길이가 5 이상인 단어를 리스트에 들어 있는 순서대로 이어 붙이려 합니다.<br><br>예를 들어 리스트가 다음과 같은 경우<br>[\"my\", \"favorite\", \"color\", \"is\", \"violet\"]<br>\"favoritecolorviolet\"을 만들면 됩니다.<br><br>단어들이 들어 있는 리스트 words 가 solution 함수의 매개변수로 주어질 때, 길이가 5 이상인 단어를 순서대로 이어 붙인 문자열을 return 하도록 solution 함수를 완성해 주세요.</div><div class='desc-section-title'>매개변수 설명</div><div class='desc-text'>단어들이 들어 있는 리스트 words가 solution 함수의 매개변수로 주어집니다.<br>* words의 길이는 1 이상 100 이하입니다.<br>* words에 들어 있는 각 단어의 길이는 1 이상 10 이하이며, 알파벳 소문자로만 이루어져 있습니다.</div><div class='desc-section-title'>Return 값 설명</div><div class='desc-text'>길이가 5 이상인 단어를 순서대로 이어 붙여 return 해 주세요.<br>* 만약 return 할 문자열이 빈 문자열이면 \"empty\"를 return 해 주세요.</div><div class='desc-section-title'>예시</div><table class='desc-table'><thead><tr><th>words</th><th>return</th></tr></thead><tbody><tr><td>[\"my\", \"favorite\", \"color\", \"is\", \"violet\"]</td><td>\"favoritecolorviolet\"</td></tr><tr><td>[\"yes\", \"i\", \"am\"]</td><td>\"empty\"</td></tr></tbody></table><div class='desc-section-title'>예시 설명</div><div class='desc-text'>예시 #1<br>길이가 5 이상인 단어는 \"favorite\", \"color\", \"violet\" 입니다. 이를 리스트에 들어 있는 순서대로 이어 붙이면 \"favoritecolorviolet\"이 됩니다.<br>예시 #2<br>길이가 5 이상인 단어가 없으므로 \"empty\"를 return 하면 됩니다.</div>",
+    "expected": "solution 함수의 반환 값은  favoritecolorviolet   입니다.\nsolution 함수의 반환 값은  empty   입니다.",
+    "initial": "#다음과 같이 import를 사용할 수 있습니다.\n#import math\n\ndef solution(words):\n    #여기에 코드를 작성해주세요.\n    answer = ''\n    return answer\n\n#아래는 테스트케이스 출력을 해보기 위한 코드입니다.\nwords1 = [\"my\", \"favorite\", \"color\", \"is\", \"violet\"]\nret1 = solution(words1);\n\n#[실행] 버튼을 누르면 출력 값을 볼 수 있습니다.\nprint(\"solution 함수의 반환 값은 \", ret1, \" 입니다.\")\n\nwords2 = [\"yes\", \"i\", \"am\"]\nret2 = solution(words2);\n\n#[실행] 버튼을 누르면 출력 값을 볼 수 있습니다.\nprint(\"solution 함수의 반환 값은 \", ret2, \" 입니다.\")",
+    "hint": "단어 길이는 len(word)로 확인하고, 문자열 합치기는 += 연산자를 사용하세요."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "2차",
+    "id": 2005,
+    "title": "[2 차] 문제 5",
+    "desc": "<div class='desc-text'>게임 캐릭터가 몬스터와 1:1 전투를 하려 합니다. 몬스터는 처음에 일정 수치의 체력(HP)을 가지고 있습니다. 캐릭터가 전투에서 이기려면 몬스터를 공격해 몬스터의 체력을 0 이하로 만들어야 합니다.<br><br>캐릭터는 공격 마법만 사용하며, 공격 마법은 항상 같은 데미지를 입힙니다. 몬스터는 힐링 마법만을 사용하며, 힐링 마법은 항상 같은 수치로 체력을 회복합니다. 둘은 항상 번갈아 가며 마법을 사용하고, 처음에는 항상 캐릭터가 먼저 공격을 시작합니다.<br><br>캐릭터의 공격력 attack 과 몬스터가 자신의 차례에 회복하는 체력 recovery, 몬스터의 초기 체력 hp 가 매개변수로 주어질 때, 몬스터를 잡기 위해서 최소 몇 번 공격해야 하는지 return 하도록 solution 함수를 작성하려 합니다. 빈칸을 채워 전체 코드를 완성해 주세요.</div><div class='desc-section-title'>매개변수 설명</div><div class='desc-text'>캐릭터의 공격력 attack과 몬스터가 자신의 차례에 회복하는 체력 recovery, 몬스터의 초기 체력 hp가 solution 함수의 매개변수로 주어집니다.<br>* attack은 1 이상 100 이하의 자연수입니다.<br>* recovery는 1 이상 100 이하의 자연수입니다.<br>* 캐릭터의 공격력은 항상 몬스터의 회복력보다 큽니다.(recovery < attack)<br>* hp는 200 이상 1,000 이하의 자연수입니다.</div><div class='desc-section-title'>Return 값 설명</div><div class='desc-text'>몬스터를 잡기 위해서 최소 몇 번 공격해야 하는지 return 해 주세요.</div><div class='desc-section-title'>예시</div><table class='desc-table'><thead><tr><th>attack</th><th>recovery</th><th>hp</th><th>return</th></tr></thead><tbody><tr><td>30</td><td>10</td><td>60</td><td>3</td></tr></tbody></table><div class='desc-section-title'>예시 설명</div><div class='desc-text'>몬스터의 체력 변화는 아래와 같습니다.<br><table class='desc-table'><thead><tr><th>차례</th><th>hp 변화</th><th>남은 hp</th></tr></thead><tbody><tr><td>캐릭터</td><td>없음</td><td>60</td></tr><tr><td>몬스터 공격</td><td>-30</td><td>30</td></tr><tr><td>캐릭터 회복</td><td>+10</td><td>40</td></tr><tr><td>몬스터 공격</td><td>-30</td><td>10</td></tr><tr><td>캐릭터 회복</td><td>+10</td><td>20</td></tr><tr><td>몬스터 공격</td><td>-30</td><td>-10</td></tr></tbody></table><br>따라서 최소 3 번 공격해야 몬스터를 잡을 수 있습니다.</div>",
+    "expected": "solution 함수의 반환 값은 3 입니다.",
+    "initial": "def solution(attack, recovery, hp):\n    count = 0\n    while(True):\n        count += ____\n        hp -= ____\n        if hp <= 0:\n            ____\n        hp += ____\n    return count\n\n#아래는 테스트케이스 출력을 해보기 위한 코드입니다.\nattack = 30\nrecovery = 10\nhp = 60\nret = solution(attack, recovery, hp)\n\n#[실행] 버튼을 누르면 출력 값을 볼 수 있습니다.\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+    "hint": "공격 시 count를 올리고 hp를 줄입니다. hp가 0 이하가 되면 break로 탈출하세요."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "2차",
+    "id": 2006,
+    "title": "[2 차] 문제 6",
+    "desc": "<div class='desc-text'>하루 동안 엘리베이터가 멈춘 층이 순서대로 들어 있는 리스트가 있습니다. 이때, 엘리베이터의 총 이동거리를 구하려 합니다. 단, 층과 층 사이의 거리는 1 입니다.<br><br>예를 들어 리스트에 [1, 2, 5, 4, 2]가 들어 있다면, 엘리베이터가 이동한 거리는 7 입니다.<br><br>하루 동안 엘리베이터가 멈춰 선 층이 순서대로 들어 있는 리스트 floors 가 매개변수로 주어질 때, 엘리베이터의 총 이동 거리를 return 하도록 solution 함수를 작성하려 합니다. 빈칸을 채워 전체 코드를 완성해 주세요.</div><div class='desc-section-title'>매개변수 설명</div><div class='desc-text'>하루 동안 엘리베이터가 멈춘 층이 순서대로 들어 있는 리스트 floors가 solution 함수의 매개변수로 주어집니다.<br>* floors의 길이는 2 이상 100 이하입니다.<br>* floors의 원소는 1 이상 100 이하의 자연수이며, 인접한 두 원소의 값이 같은 경우는 주어지지 않습니다.<br>* floors의 첫 번째 원소는 엘리베이터의 처음 위치를 나타냅니다.</div><div class='desc-section-title'>Return 값 설명</div><div class='desc-text'>엘리베이터의 총 이동 거리를 return 해 주세요.</div><div class='desc-section-title'>예시</div><table class='desc-table'><thead><tr><th>floors</th><th>return</th></tr></thead><tbody><tr><td>[1, 2, 5, 4, 2]</td><td>7</td></tr></tbody></table><div class='desc-section-title'>예시 설명</div><div class='desc-text'>엘리베이터는 처음에 1 층에 있으며, 다음 순서대로 움직였습니다.<br>* 1 층 - 2 층 - 5 층 - 4 층 - 2 층<br>층과 층 사이의 거리는 1 이므로, 엘리베이터가 이동한 거리는 다음과 같습니다.<br>* 1 층 - 2 층 (이동 거리 : 1)<br>* 2 층 - 5 층 (이동 거리 : 3)<br>* 5 층 - 4 층 (이동 거리 : 1)<br>* 4 층 - 2 층 (이동 거리 : 2)<br>따라서 총 이동 거리는 7 입니다.</div>",
+    "expected": "solution 함수의 반환 값은 7 입니다.",
+    "initial": "def solution(floors):\n    dist = 0\n    length = len(floors)\n    for i in range(____):\n        if ____:\n            dist += floors[i] - floors[i-1]\n        else:\n            dist += floors[i-1] - floors[i]\n    return dist\n\n#아래는 테스트케이스 출력을 해보기 위한 코드입니다.\nfloors = [1, 2, 5, 4, 2]\nret = solution(floors)\n\n#[실행] 버튼을 누르면 출력 값을 볼 수 있습니다.\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+    "hint": "이전 층(i-1)과 현재 층(i)의 차이를 구하세요. floors[i]가 더 큰 경우와 아닌 경우를 나눕니다."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "2차",
+    "id": 2007,
+    "title": "[2 차] 문제 7",
+    "desc": "<div class='desc-text'>화씨온도(℉)를 섭씨온도(℃)로, 섭씨온도(℃)를 화씨온도(℉)로 바꾸려고 합니다. 두 온도 사이의 환산 공식은 다음과 같습니다.<br><br>환산공식<br>* 화씨온도(℉)에서 섭씨온도(℃)로 환산 : (화씨온도 - 32) ÷ 1.8 = 섭씨온도<br>* 섭씨온도(℃)에서 화씨온도(℉)로 환산 : (섭씨온도 x 1.8) + 32 = 화씨온도<br><br>두 온도 단위 사이를 환산하는 함수를 구현하려고 합니다. 현재 온도 value 와 현재 단위 unit 이 매개변수로 주어질 때, 환산한 온도의 정수 부분을 return 하도록 solution 함수를 작성했습니다. 그러나, 코드 일부분이 잘못되어 있기 때문에 몇몇 입력에 대해서는 올바르게 동작하지 않습니다. 주어진 코드에서 한 줄만 변경해서 모든 입력에 대해 올바르게 동작하도록 수정하세요.</div><div class='desc-section-title'>매개변수 설명</div><div class='desc-text'>현재 온도 value와 현재 단위 unit이 solution 함수의 매개변수로 주어집니다.<br>* unit은 화씨온도 \"F\"와 섭씨온도 \"C\" 둘 중 하나로 주어집니다.<br>* unit이 \"F\"인 경우 value는 화씨온도(℉)를 나타냅니다.<br>* unit이 \"C\"인 경우 value는 섭씨온도(℃)를 나타냅니다.<br>* value는 -460 이상 1,000 이하의 정수입니다.</div><div class='desc-section-title'>Return 값 설명</div><div class='desc-text'>환산한 온도의 정수 부분을 return 해 주세요.<br>* unit 이 \"F\"인 경우에는 화씨온도(℉)에서 섭씨온도(℃)로 환산해 주세요.<br>* unit 이 \"C\"인 경우에는 섭씨온도(℃)에서 화씨온도(℉)로 환산해 주세요.</div><div class='desc-section-title'>예시</div><table class='desc-table'><thead><tr><th>value</th><th>unit</th><th>return</th></tr></thead><tbody><tr><td>527</td><td>\"C\"</td><td>980</td></tr></tbody></table><div class='desc-section-title'>예시 설명</div><div class='desc-text'>unit 이 \"C\" 이므로 주어진 value 는 527℃를 나타냅니다. 이를 화씨온도(℉)로 환산하면 다음과 같습니다.<br>(섭씨온도 x 1.8) + 32 = (527 x 1.8) + 32 = 980.6<br>따라서 환산 결과는 980.6℉이며, 정수 부분만 return 하면 되므로 980 을 return 하면 됩니다.</div>",
+    "expected": "solution 함수의 반환 값은 980 입니다.",
+    "initial": "def solution(value, unit):\n    converted = 0\n    if unit == \"C\":\n        value = value * 1.8 + 32\n    if unit == \"F\":\n        value = value - 32 / 1.8\n    converted = int(value)\n    return converted\n\n#아래는 테스트케이스 출력을 해보기 위한 코드입니다. 아래 코드는 잘못된 부분이 없으니, solution함수만 수정하세요.\nvalue = 527\nunit = \"C\"\nret = solution(value, unit)\n\n\n#[실행] 버튼을 누르면 출력 값을 볼 수 있습니다.\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+    "hint": "화씨를 섭씨로 바꿀 때 괄호 연산 순서가 잘못되었습니다. (value - 32) / 1.8 로 고치세요."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "2차",
+    "id": 2008,
+    "title": "[2 차] 문제 8",
+    "desc": "<div class='desc-text'>자연수의 각 자릿수 중에서 소수는 몇 개인지 구하려 합니다. 즉, 자연수를 각 자릿수별로 나누었을 때 2, 3, 5, 7 이 몇 개 있는지 구하려 합니다.<br><br>예를 들어, 자연수가 29022531 일 때 각 자릿수 중 소수의 위치는 다음과 같습니다.<br>* `2` 9 0 `2` `2` `5` `3` 1<br><br>따라서 소수의 개수는 총 5 개입니다. 자연수 number 가 매개변수로 주어질 때 number 의 각 자릿수 중 소수는 몇 개인지 return 하도록 solution 함수를 작성했습니다. 그러나, 코드 일부분이 잘못되어 있기 때문에 몇몇 입력에 대해서는 올바르게 동작하지 않습니다. 주어진 코드에서 한 줄만 변경해서 모든 입력에 대해 올바르게 동작하도록 수정하세요.</div><div class='desc-section-title'>매개변수 설명</div><div class='desc-text'>자연수 number가 solution 함수의 매개변수로 주어집니다.<br>* number는 1 이상 1,000,000,000 이하의 자연수입니다.</div><div class='desc-section-title'>Return 값 설명</div><div class='desc-text'>number 의 각 자릿수 중 소수는 몇 개인지 return 해 주세요.</div><div class='desc-section-title'>예시</div><table class='desc-table'><thead><tr><th>number</th><th>return</th></tr></thead><tbody><tr><td>29022531</td><td>5</td></tr></tbody></table>",
+    "expected": "solution 함수의 반환 값은 5 입니다.",
+    "initial": "def solution(number):\n    count = 0\n    while number >= 0:\n        n = number % 10\n        if n == 2 or n == 3 or n == 5 or n == 7:\n            count += 1\n        number //= 10\n    return count\n\n#아래는 테스트케이스 출력을 해보기 위한 코드입니다. 아래 코드는 잘못된 부분이 없으니, solution함수만 수정하세요.\nnumber = 29022531\nret = solution(number)\n\n\n#[실행] 버튼을 누르면 출력 값을 볼 수 있습니다.\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+    "hint": "while 문이 무한 루프에 빠지지 않도록 조건을 number > 0 으로 수정하세요."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "2차",
+    "id": 2009,
+    "title": "[2 차] 문제 9",
+    "desc": "<div class='desc-text'>N 명의 후보에 대해 투표한 결과가 들어 있는 리스트가 있습니다. 예를 들어 5 명의 후보에 대해 투표를 진행한 결과가 [2, 5, 3, 4, 1, 5, 1, 5, 5, 3]이라면 순서대로 [2 번, 5 번, 3 번, 4 번, 1 번, 5 번, 1 번, 5 번, 5 번, 3 번] 후보에 투표했음을 나타냅니다. <br><br>이때, 정확히 K 표를 받은 후보는 총 몇 명인지 구하려 합니다. 예를 들어 K = 2 일 때, 위 투표 결과에서 정확히 2 표를 받은 후보는 1 번, 3 번 후보로, 총 2 명입니다.<br><br>투표 결과가 들어 있는 리스트 votes, 후보의 수 N, 표의 개수 K 가 매개변수로 주어질 때, K 표를 받은 후보는 몇 명인지 return 하도록 solution 함수를 작성했습니다. 그러나, 코드 일부분이 잘못되어 있기 때문에 몇몇 입력에 대해서는 올바르게 동작하지 않습니다. 주어진 코드에서 한 줄만 변경해서 모든 입력에 대해 올바르게 동작하도록 수정하세요.</div><div class='desc-section-title'>매개변수 설명</div><div class='desc-text'>투표 결과가 들어 있는 리스트 votes, 후보의 수 N, 표의 개수 K가 solution 함수의 매개변수로 주어집니다.<br>* votes의 길이는 10 이상, 100 이하입니다.<br>* votes의 원소는 1 이상, 전체 후보의 수 N 이하의 자연수입니다.<br>* N은 3 이상 10 이하의 자연수입니다.<br>* K는 0 이상 100 이하의 정수입니다.</div><div class='desc-section-title'>Return 값 설명</div><div class='desc-text'>K 표를 받은 후보는 몇 명인지 return 해 주세요.</div><div class='desc-section-title'>예시</div><table class='desc-table'><thead><tr><th>votes</th><th>N</th><th>K</th><th>return</th></tr></thead><tbody><tr><td>[2, 5, 3, 4, 1, 5, 1, 5, 5, 3]</td><td>5</td><td>2</td><td>2</td></tr></tbody></table><div class='desc-section-title'>예시 설명</div><div class='desc-text'>각 후보가 받은 표는 다음과 같습니다.<br>* 1 번 후보 : 2 표, 2 번 후보 : 1 표, 3 번 후보 : 2 표, 4 번 후보 : 1 표, 5 번 후보 : 4 표<br>따라서 2 표를 받은 후보는 1 번, 3 번 후보로 총 2 명입니다.</div>",
+    "expected": "solution 함수의 반환 값은 2 입니다.",
+    "initial": "def solution(votes, N, K):\n    counter = [0 for _ in range(N + 1)]\n    for x in votes:\n        counter[x] += 1\n    answer = -1\n    for c in counter:\n        if c == K:\n            answer += 1\n    return answer\n\n#아래는 테스트케이스 출력을 해보기 위한 코드입니다. 아래 코드는 잘못된 부분이 없으니, solution함수만 수정하세요.\nvotes = [2, 5, 3, 4, 1, 5, 1, 5, 5, 3]\nN = 5\nK = 2\nret = solution(votes, N, K)\n\n\n#[실행] 버튼을 누르면 출력 값을 볼 수 있습니다.\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+    "hint": "answer의 초기값을 -1이 아닌 0으로 설정해야 개수가 정확히 카운트됩니다."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "2차",
+    "id": 2010,
+    "title": "[2 차] 문제 10",
+    "desc": "<div class='desc-text'>A 백화점에서는 고객의 구매금액에 따라 다음과 같이 상품권을 지급합니다.<br><br><table class='desc-table'><thead><tr><th>구매 금액</th><th>상품권</th></tr></thead><tbody><tr><td>100 만원 이상 구매</td><td>5 만원 상품권</td></tr><tr><td>60 만원 이상 구매</td><td>3 만원 상품권</td></tr><tr><td>40 만원 이상 구매</td><td>2 만원 상품권</td></tr><tr><td>20 만원 이상 구매</td><td>1 만원 상품권</td></tr></tbody></table><br>이때, 상품권은 지급 가능한 가장 큰 금액으로 한 장만 지급합니다. 예를 들어 고객이 65 만 원을 구매했다면, 3 만원 상품권 한 장만 지급합니다.<br><br>고객들의 구매 금액이 들어있는 리스트 purchase 가 주어질 때, 고객들에게 지급해야 하는 상품권 총액을 return 하도록 solution 함수를 작성했습니다. 그러나, 코드 일부분이 잘못되어 있기 때문에 코드가 올바르게 동작하지 않습니다. 주어진 코드에서 한 줄만 변경해서 모든 입력에 대해 올바르게 동작하도록 수정해 주세요.</div><div class='desc-section-title'>매개변수 설명</div><div class='desc-text'>고객들의 구매 금액이 들어 있는 리스트 purchase가 solution 함수의 매개변수로 주어집니다.<br>* purchase의 길이는 1 이상 100 이하입니다.<br>* purchase의 원소는 10 이상 1,500,000 이하의 자연수이며, 10원 단위로 주어집니다.</div><div class='desc-section-title'>Return 값 설명</div><div class='desc-text'>고객들에게 지급해야 하는 상품권 총액을 return 해 주세요.</div><div class='desc-section-title'>예시</div><table class='desc-table'><thead><tr><th>purchase</th><th>return</th></tr></thead><tbody><tr><td>[150000, 210000, 399990, 990000, 1000000]</td><td>100000</td></tr></tbody></table><div class='desc-section-title'>예시 설명</div><div class='desc-text'>* 210,000 원, 399,990 원을 구매한 고객에게 1 만원 상품권을 지급해야 합니다.<br>* 990,000 원을 구매한 고객에게 3 만원 상품권을 지급해야 합니다.<br>* 1,000,000 원을 구매한 고객에게 5 만원 상품권을 지급해야 합니다.<br>따라서 지급해야 하는 상품권은 1 만원 상품권 2 장, 3 만원 상품권 1 장, 5 만원 상품권 1 장으로, 총액은 10 만원입니다.</div>",
+    "expected": "solution 함수의 반환 값은 100000 입니다.",
+    "initial": "def solution(purchase):\n    total = 0\n    for p in purchase:\n        if p >= 1000000:\n            total += 50000\n        elif p >= 600000:\n            total += 30000\n        elif p >= 400000:\n            total += 20000\n        else:\n            total += 10000\n    return total\n\n#아래는 테스트케이스 출력을 해보기 위한 코드입니다. 아래 코드는 잘못된 부분이 없으니, solution함수만 수정하세요.\npurchase = [150000, 210000, 399990, 990000, 1000000]\nret = solution(purchase)\n\n\n#[실행] 버튼을 누르면 출력 값을 볼 수 있습니다.\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+    "hint": "마지막 else 구문은 20만원 미만인 사람에게도 1만원을 줍니다. 이를 elif p >= 200000: 으로 수정하세요."
+  }
+]
