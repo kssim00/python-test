@@ -1,0 +1,92 @@
+[
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "4차",
+    "title": "[4 차] 문제 1",
+    "desc": "□ 문제 설명\n학생 10 명이 상담을 받기 위해 매일 한 명씩, 순서대로 상담실을 찾아갑니다. 상담은 상담 선생님이 계실 때에만 상담을 받을 수 있습니다. 또한 한번 상담실을 방문한 학생은 다시 상담실에 찾아가지 않습니다. 선생님의 일정표가 주어질 때, 누가 상담을 받지 못했는지 알고 싶습니다. 일정표에는 선생님이 있는 날엔 \"O\"가, 없는 날엔 \"X\"가 표시됩니다.\n\n예를 들어, 선생님의 일정이 [\"O\", \"X\", \"X\", \"O\", \"O\", \"O\", \"X\", \"O\", \"X\", \"X\"]라면 2 번, 3 번, 7 번, 9 번, 10 번의 학생은 상담을 받지 못합니다.\n\n선생님의 일정을 담은 리스트 schedule 이 매개변수로 주어질 때, 상담을 받지 못한 학생의 번호를 오름차순으로 정렬하여 return 하도록 solution 함수를 작성하려 합니다. 빈칸을 채워 전체 코드를 완성해 주세요.\n\n□ 매개변수 설명\n선생님의 일정을 담은 리스트 schedule이 solution 함수의 매개변수로 주어집니다.\n* schedule의 원소는 \"O\" 또는 \"X\"입니다.\n* schedule은 길이가 10인 리스트입니다.\n\n□ return 값 설명\n상담을 받지 못한 학생들의 번호를 오름차순으로 정렬하여 return 합니다.\n\n□ 예시\n<table class='desc-table'><thead><tr><th>schedule</th><th>return</th></tr></thead><tbody><tr><td>[\"O\", \"X\", \"X\", \"O\", \"O\", \"O\", \"X\", \"O\", \"X\", \"X\"]</td><td>[2, 3, 7, 9, 10]</td></tr></tbody></table>\n\n<div class='desc-section-title'>예시 설명</div><div class='desc-text'>1 일, 4 일, 5 일, 6 일, 8 일에만 선생님이 상담실에 있으므로 2 번, 3 번, 7 번, 9 번, 10 번 학생은 상담을 받지 못합니다.</div>",
+    "expected": "solution 함수의 반환 값은 [2, 3, 7, 9, 10] 입니다.",
+    "initial": "def solution(schedule):\n    answer = []\n    for idx, i in enumerate(schedule):\n        if i == ____:\n            answer.append(____)\n    return answer\n\nschedule = [\"O\", \"X\", \"X\", \"O\", \"O\", \"O\", \"X\", \"O\", \"X\", \"X\"]\nret = solution(schedule)\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+    "hint": "선생님이 없는 날은 \"X\"입니다. 학생 번호는 인덱스(idx)에 1을 더한 값입니다."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "4차",
+    "title": "[4 차] 문제 2",
+    "desc": "□ 문제 설명\n체력시험 합격 인원을 알아보려고 합니다. 체력시험 종목으로는 윗몸일으키기, 팔굽혀펴기, 달리기가 있습니다. 종목별 합격기준은 다음과 같습니다.\n\n<table class='desc-table'><thead><tr><th>윗몸일으키기</th><th>팔굽혀펴기</th><th>달리기</th></tr></thead><tbody><tr><td>80 점 이상</td><td>88 점 이상</td><td>70 점 이상</td></tr></tbody></table>\n\n* 통과한 종목이 하나 이하거나, 통과 점수의 반을 넘기지 못한 종목이 있다면 불합격입니다.\n* 그 외에는 합격입니다.\n\n1. 통과한 종목이 몇 개인지 셉니다.\n2. 통과 점수의 반을 넘기지 못한 종목이 몇 개인지 셉니다.\n3. 통과한 종목이 하나보다 많고 통과 점수의 반을 넘기지 못한 종목이 없으면 통과한 인원으로 셉니다.\n\n각 종목 기록을 담고 있는 리스트 scores 가 매개변수로 주어질 때, 시험에 합격한 인원을 return 하도록 solution 함수를 작성하려 합니다. 위 구조를 참고하여 코드가 올바르게 동작할 수 있도록 빈칸에 주어진 func_a, func_b func_c 함수와 매개변수를 알맞게 채워주세요.\n\n□ 매개변수 설명\n각 종목 기록을 담고 있는 리스트 scores가 solution 함수의 매개변수로 주어집니다.\n* scores에는 윗몸일으키기, 팔굽혀펴기, 달리기 점수가 차례로 들어 있습니다.\n* scores의 원소는 0 이상 100 이하인 정수입니다.\n* scores의 길이는 0 이상 10,000 이하인 정수입니다.\n\n□ return 값 설명\n시험에 합격한 인원을 return 합니다.\n\n□ 예시\n<table class='desc-table'><thead><tr><th>score</th><th>return</th></tr></thead><tbody><tr><td>[[30, 40, 100], [97, 88, 95]]</td><td>1</td></tr><tr><td>[[90, 88, 70], [85, 90, 90], [100, 100, 70], [30, 90, 80], [40, 10, 20], [83, 88, 80]]</td><td>4</td></tr></tbody></table>\n\n<div class='desc-section-title'>예시 설명</div><div class='desc-text'>예시 #1<br>1 번째 사람은 윗몸일으키기 30 점, 팔굽혀펴기 40 점으로 합격 점수의 반을 통과하지 못해 불합격입니다.<br>2번째 사람은 윗몸일으키기 97점, 팔굽혀펴기 88점, 달리기 95점으로 모두 통과하여 합격입니다. 따라서 총 1 명이 합격하였습니다.<br><br>예시 #2<br>1 번째, 2 번째, 3 번째, 6 번째 사람이 합격 기준을 만족하여 총 4 명이 합격하였습니다.</div>",
+    "expected": "solution 함수의 반환 값은 1 입니다.\nsolution 함수의 반환 값은 4 입니다.",
+    "initial": "def func_a(passed, non_passed):\n    return ( passed > 1 and non_passed == 0 )\n\ndef func_b(scores):\n    answer = 0\n    if scores[0] < 40: answer += 1\n    if scores[1] < 44: answer += 1\n    if scores[2] < 35: answer += 1\n    return answer\n\ndef func_c(scores):\n    answer = 0\n    if scores[0] >= 80: answer += 1\n    if scores[1] >= 88: answer += 1\n    if scores[2] >= 70: answer += 1\n    return answer\n\ndef solution(scores):\n    answer = 0\n    for my_score in scores:\n        passed = func_____(____)\n        non_passed = func_____(____)\n        answer += func_____(____, ____)\n    return answer\n\nret1 = solution([[30, 40, 100], [97, 88, 95]])\nprint(\"solution 함수의 반환 값은\", ret1, \"입니다.\")\nret2 = solution([[90, 88, 70], [85, 90, 90], [100, 100, 70], [30, 90, 80], [40, 10, 20], [83, 88, 80]])\nprint(\"solution 함수의 반환 값은\", ret2, \"입니다.\")",
+    "hint": "func_c는 통과 개수, func_b는 반 미달 개수, func_a는 최종 합격 판단입니다."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "4차",
+    "title": "[4 차] 문제 3",
+    "desc": "□ 문제 설명\nA 와 B 가 카드 게임을 할 때, 누가 더 많은 점수를 획득했는지, 또 획득한 점수는 몇 점인지 알아보려고 합니다. 게임 규칙은 다음과 같습니다.\n* 알파벳 a, b, c, d, e 가 적힌 카드뭉치가 있습니다.\n* A 와 B 가 서로 번갈아 가면서 n 장씩 카드를 뽑습니다.\n* 소유한 카드 점수를 합산합니다. 알파벳 카드 한 장당 a = 1 점, b = 2 점, c = 3 점, d = 4 점, e = 5 점으로 점수를 계산합니다.\n* 점수가 높은 사람이 승리합니다.\n\n게임에서 이긴 사람과 획득 점수를 구하기 위해 다음과 같이 프로그램 구조를 작성했습니다.\n1. A 와 B 가 번갈아 가며 가져간 카드를 각각 리스트에 넣습니다.\n2. A 와 B 가 각각 획득한 점수를 구합니다.\n3. 획득한 점수가 큰 사람과 점수를 순서대로 리스트에 담아 return 합니다.\n\n뽑아야 하는 카드 개수 n 과 카드를 나타내는 문자열 bundle 이 매개변수로 주어질 때, 이긴 사람과 점수를 return 하도록 solution 함수를 작성하려 합니다. 위 구조를 참고하여 코드가 올바르게 동작할 수 있도록 빈칸에 주어진 func_a, func_b, func_c 함수와 매개변수를 알맞게 채워주세요.\n\n□ 매개변수 설명\n뽑아야 하는 카드 개수 n과 카드를 나타내는 문자열 bundle이 solution함수의 매개변수로 주어집니다.\n* n은 1 이상 25 이하인 자연수입니다.\n* bundle은 모두 알파벳 소문자입니다.\n* bundle의 길이는 2이상 2*n이하입니다.\n\n□ return 값 설명\n이긴 사람과 획득한 점수를 return 합니다.\nA 가 이겼을 경우에는 1, B 가 이겼을 경우에는 2, 무승부일 경우에는 0 을 return 해 주세요.\n\n□ 예시\n<table class='desc-table'><thead><tr><th>n</th><th>bundle</th><th>return</th></tr></thead><tbody><tr><td>4</td><td>\"cacdbdedccbb\"</td><td>[0, 13]</td></tr></tbody></table>\n\n<div class='desc-section-title'>예시 설명</div><div class='desc-text'>A 는 c, c, b, e 카드를 뽑았고 B 는 a, d, d, d 카드를 뽑았습니다. A 가 획득한 점수는 13 점이고 B 가 획득한 점수는 13 점입니다. 둘다 13 점을 획득하여 게임은 무승부로 끝납니다.</div>",
+    "expected": "solution 함수의 반환 값은 [0, 13] 입니다.",
+    "initial": "def func_a(bundle, start):\n    return bundle[start::2]\n\ndef func_b(score1, score2):\n    if score1 > score2: return [1, score1]\n    elif score2 > score1: return [2, score2]\n    else: return [0, score1]\n\ndef func_c(bundle):\n    answer = 0\n    score_per_cards = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5}\n    for card in bundle:\n        answer += score_per_cards[card]\n    return answer\n        \ndef solution(n, bundle):\n    a_cards = func_a(____, ____)[:n]\n    b_cards = func_a(____, ____)[:n]\n    a_score = func_c(____)\n    b_score = func_c(____)\n    return func_b(____, ____)\n\nret = solution(4, \"cacdbdedccbb\")\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+    "hint": "A는 0번 인덱스, B는 1번 인덱스부터 시작해 번갈아 가져갑니다."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "4차",
+    "title": "[4 차] 문제 4",
+    "desc": "□ 문제 설명\n프로그래밍 수업 n 개를 동시에 진행할 때, 필요한 조교 수를 알아보려고 합니다. 조교 1 명이 m 명의 학생을 담당합니다.\n교실별 학생 수 classes, 조교 1 명이 담당하는 학생 수 m 이 매개변수로 주어질 때, 수업을 진행하기 위한 조교 수를 return 하는 solution 함수를 작성하려 합니다. 빈칸을 채워 전체 코드를 완성해 주세요.\n\n□ 매개변수 설명\n교실별 학생 수 classes, 조교 1명이 담당하는 학생 수 m이 solution 함수의 매개변수로 주어집니다.\n* classes의 원소는 0이상 1,000이하인 정수입니다.\n* classes의 길이는 1이상 1,000이하인 자연수입니다.\n* m은 1이상 1,000이하인 자연수입니다.\n\n□ return 값 설명\n수업을 진행하기 위한 조교 수를 return 합니다.\n\n□ 예시\n<table class='desc-table'><thead><tr><th>classes</th><th>m</th><th>return</th></tr></thead><tbody><tr><td>[80, 45, 33, 20]</td><td>30</td><td>8</td></tr></tbody></table>\n\n<div class='desc-section-title'>예시 설명</div><div class='desc-text'>반마다 학생 수가 80 명, 45 명, 33 명, 20 명이고 조교 1 명이 학생 30 명을 담당합니다. 반마다 필요한 조교 수는 3 명, 2 명, 2 명, 1 명으로 총 8 명의 조교가 필요합니다.</div>",
+    "expected": "solution 함수의 반환 값은 8 입니다.",
+    "initial": "def solution(classes, m):\n    answer = 0\n    for students in classes:\n        answer += students ____ m\n        if students ____ m != 0:\n            answer += 1\n    return answer\n\nclasses = [80, 45, 33, 20]\nm = 30\nret = solution(classes, m)\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+    "hint": "몫(//)을 통해 기본 조교수를 구하고, 나머지(%)가 있으면 1명을 추가합니다."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "4차",
+    "title": "[4 차] 문제 5",
+    "desc": "□ 문제 설명\n열량이 적힌 식단표가 있습니다. 다이어트를 하는 A 씨는 오늘 먹는 열량이 그동안 먹은 식단의 열량 중 최솟값보다 큰 경우 운동을 하여 그 차이만큼을 소모합니다.\n\n예를 들어, 식단의 열량이 [713, 665, 873, 500, 751]이라면 둘째 날까지는 운동을 하지 않습니다. 셋째 날 식단의 열량이 873 이고 그 전의 먹은 식단의 열량 중 최솟값이 665 이므로 208 열량을 소모하기 위한 운동을 합니다. 넷째 날은 운동을 하지 않고 다섯째 날 식단의 열량이 751 이고 그 전의 먹은 식단의 열량 중 최솟값이 500 이므로 251 열량을 소모하기 위한 운동을 합니다. 따라서 운동으로 소모하는 총열량은 459 입니다.\n\n식단의 열량을 담고 있는 리스트 calorie 가 매개변수로 주어질 때, 운동으로 소모하는 총열량을 return 하도록 solution 함수를 작성했습니다. 그러나, 코드 일부분이 잘못되어 있기 때문에 몇몇 입력에 대해서는 올바르게 동작하지 않습니다. 주어진 코드에서 한 줄만 변경해서 모든 입력에 대해 올바르게 동작하도록 수정하세요.\n\n□ 매개변수 설명\n식단의 열량을 담고 있는 리스트 calorie가 solution 함수의 매개변수로 주어집니다.\n* calorie의 각 원소는 0보다 크고 1,000보다 작거나 같은 자연수입니다.\n* calorie의 길이는 0보다 크고 100보다 작거나 같은 자연수입니다.\n\n□ return 값 설명\n운동으로 소모하는 총열량을 return 해 주세요.\n\n□ 예시\n<table class='desc-table'><thead><tr><th>calorie</th><th>return</th></tr></thead><tbody><tr><td>[713, 665, 873, 500, 751]</td><td>459</td></tr></tbody></table>",
+    "expected": "solution 함수의 반환 값은 459 입니다.",
+    "initial": "def solution(calorie):\n    min_cal = 0\n    answer = 0\n    for cal in calorie:\n        if cal > min_cal:\n            answer += cal - min_cal\n        min_cal = min(min_cal, cal)\n    return answer\n\ncalorie = [713, 665, 873, 500, 751]\nret = solution(calorie)\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+    "hint": "min_cal의 초기값이 0이면 항상 cal > min_cal이 참이 됩니다. 첫 번째 식단값을 초기값으로 쓰세요."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "4차",
+    "title": "[4 차] 문제 6",
+    "desc": "□ 문제 설명\n적립된 포인트를 최대한으로 사용하려고 합니다. 포인트를 사용하는 규칙은 다음과 같습니다.\n* 포인트는 100 포인트 단위로 사용합니다.\n* 1000 포인트 이상 있을 때만 포인트를 사용할 수 있습니다.\n\n적립된 포인트 point 가 매개변수로 주어질 때, 최대 몇 포인트를 쓸 수 있는지 return 하도록 solution 함수를 작성했습니다. 그러나, 코드 일부분이 잘못되어 있기 때문에 몇몇 입력에 대해서는 올바르게 동작하지 않습니다. 주어진 코드에서 한 줄만 변경해서 모든 입력에 대해 올바르게 동작하도록 수정하세요.\n\n□ 매개변수 설명\n적립된 포인트 point가 solution함수의 매개변수로 주어집니다.\n* point는 0 이상 1,000,000 이하인 정수입니다.\n\n□ return 값 설명\n최대 몇 포인트를 쓸 수 있는지 return 합니다.\n\n□ 예시\n<table class='desc-table'><thead><tr><th>point</th><th>return</th></tr></thead><tbody><tr><td>2323</td><td>2300</td></tr></tbody></table>\n\n<div class='desc-section-title'>예시 설명</div><div class='desc-text'>적립된 포인트가 2323 포인트라면 최대로 사용 가능한 포인트는 2300 포인트입니다.</div>",
+    "expected": "solution 함수의 반환 값은 2300 입니다.",
+    "initial": "def solution(point):\n    if point < 1000:\n        return 0\n    return point * 100 // 100\n\nret = solution(2323)\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+    "hint": "point // 100 * 100 연산을 통해 백 단위 아래를 버리세요."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "4차",
+    "title": "[4 차] 문제 7",
+    "desc": "□ 문제 설명\n중간시험 점수와 기말시험 점수가 있습니다. 이를 바탕으로 점수가 가장 많이 오른 학생의 점수 차이와 가장 많이 떨어진 학생의 점수 차이를 구하려 합니다. 이를 위해 다음과 같이 프로그램 구조를 작성했습니다.\n1. 각 학생에 대하여 기말고사 점수에서 중간고사 점수를 뺀 값의 최댓값을 구합니다.\n2. 각 학생에 대하여 기말고사 점수에서 중간고사 점수를 뺀 값의 최솟값을 구합니다.\n3. 1 번과 2 번 과정에서 구한 점수를 리스트에 담아 return 합니다.\n\n예를 들어 중간시험 점수가 [20, 50, 40]이고, 기말시험 점수가 [10, 50, 70]이면, 학생의 시험 점수 차이는 [-10, 0, 30]입니다. 따라서 성적이 가장 많이 오른 학생은 30 점이 올랐습니다. 그리고 성적이 가장 많이 떨어진 학생은 10 점이 떨어졌습니다.\n\n학번순으로 중간시험 점수를 담은 리스트 midScores 와 학번순으로 기말시험 점수를 담은 리스트 finalScores 가 solution 함수의 매개변수로 주어집니다. 이 때 성적이 가장 많이 오른 학생의 점수 차이를 **리스트 첫 번째 원소** 로, 성적이 가장 많이 떨어진 학생의 점수 차이를 **두 번째 원소** 로 담은 리스트를 return 하도록 solution 함수를 작성했습니다. 그러나, 코드 일부분이 잘못되어 있기 때문에 몇몇 입력에 대해서는 올바르게 동작하지 않습니다. 주어진 코드에서 한 줄만 변경해서 모든 입력에 대해 올바르게 동작하도록 수정하세요.\n\n□ 매개변수 설명\n학번순으로 중간시험 점수를 담은 리스트 midScores와 학번순으로 기말시험 점수를 담은 리스트 finalScores가 solution 함수의 매개변수로 주어집니다.\n* 시험 점수는 100 이하인 자연수입니다.\n* midScores의 길이는 5 이상 50 이하입니다.\n* 리스트 midScores의 길이와 리스트 finalScores의 길이는 같습니다.\n\n□ return 값 설명\n성적이 가장 많이 오른 학생의 점수 차이를 **리스트 첫 번째 원소** 로 하고, 성적이 가장 많이 떨어진 학생의 점수 차이를 **두 번째 원소** 로 담은 리스트를 return 해 주세요.\n* 점수가 오른 학생이 없으면 첫 번째 원소에 0 을 넣고, 점수가 떨어진 학생이 없으면 두 번째 원소에 0 을 넣도록 합니다.\n\n□ 예시\n<table class='desc-table'><thead><tr><th>midScores</th><th>finalScores</th><th>return</th></tr></thead><tbody><tr><td>[20, 50, 40]</td><td>[10, 50, 70]</td><td>[30, -10]</td></tr></tbody></table>",
+    "expected": "solution 함수의 반환 값은 [30, -10] 입니다.",
+    "initial": "def func_a(scores1, scores2):\n    answer = 0\n    for score1, score2 in zip(scores1, scores2):\n        answer = max(answer, score2 - score1)\n    return answer\n\ndef func_b(scores1, scores2):\n    answer = 0\n    for score1, score2 in zip(scores1, scores2):\n        answer = min(answer, score1 - score2)\n    return answer\n            \ndef solution(mid_scores, final_scores):\n    up = func_a(mid_scores, final_scores)\n    down = func_b(mid_scores, final_scores)\n    answer = [up, down]\n    return answer\n\nret = solution([20, 50, 40], [10, 50, 70])\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+    "hint": "func_b에서 최소값을 찾을 때 성적 변화량(score2 - score1)을 넣어야 합니다."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "4차",
+    "title": "[4 차] 문제 8",
+    "desc": "□ 문제 설명\n1 번부터 n 번까지의 후보에 대한 투표 결과가 주어질 때, 과반수를 득표한 후보자의 번호를 구하려고 합니다. 여기서 과반수란 절반이 넘는 수를 의미합니다.\n예를 들어, 1 번부터 3 번까지의 후보에 대한 투표 결과가 [1, 2, 1, 3, 1, 2, 1]이라면 순서대로 [1 번, 2 번, 1 번, 3 번, 1 번, 2 번, 1 번] 후보에 투표했음을 나타내고, 이 경우 당선된 후보자의 번호는 1 번입니다.\n후보의 수 n, 투표 결과가 담긴 리스트 votes 가 매개변수로 주어질 때, 과반수를 득표한 후보자의 번호를 return 하도록 solution 함수를 작성했습니다. 그러나, 코드 일부분이 잘못되어 있기 때문에 몇몇 입력에 대해서는 올바르게 동작하지 않습니다. 주어진 코드에서 한 줄만 변경해서 모든 입력에 대해 올바르게 동작하도록 수정하세요.\n\n□ 매개변수 설명\n후보의 수 n, 투표 결과가 담긴 리스트 votes가 solution 함수의 매개변수로 주어집니다.\n* n은 1 이상 100 이하의 자연수입니다.\n* votes의 길이는 1 이상 1,000 이하의 자연수입니다.\n* votes의 각 원소는 1 이상 n 이하의 자연수입니다.\n\n□ return 값 설명\n과반수를 득표한 후보자의 번호를 return 해 주세요.\n* 만약, 과반수를 득표한 후보자가 없다면 -1 을 return 해 주세요.\n\n□ 예시\n<table class='desc-table'><thead><tr><th>n</th><th>votes</th><th>return</th></tr></thead><tbody><tr><td>3</td><td>[1,2,1,3,1,2,1]</td><td>1</td></tr><tr><td>2</td><td>[2,1,2,1,2,2,1]</td><td>2</td></tr></tbody></table>\n\n<div class='desc-section-title'>예시 설명</div><div class='desc-text'>예시 #1<br>1 번부터 3 번까지의 후보 3 명이 있으며, 투표 결과는 [1, 2, 1, 3, 1, 2, 1]입니다. 총 투표 수는 7 표이며, 1 번 후보가 4 표, 2 번 후보가 2 표, 3 번 후보가 1 표씩 받았습니다. 이 경우, 1 번 후보가 과반수를 득표하였으므로 1 을 return 합니다.<br><br>예시 #2<br>1 번부터 2 번까지의 후보 2 명이 있으며, 투표 결과는 [2, 1, 2, 1, 2, 2, 1]입니다. 총 투표 수는 7 표이며, 1 번 후보는 3 표, 2 번 후보는 4 표를 받았습니다. 이 경우, 2 번 후보가 과반수를 득표하였으므로 2 를 return 합니다.</div>",
+    "expected": "solution 함수의 반환 값은  1  입니다.\nsolution 함수의 반환 값은  2  입니다.",
+    "initial": "def solution(n, votes):\n    arr = [0] * (n + 1)\n    for vote in votes:\n        arr[vote] += 1\n\n    for i in range(1, n+1):\n        if arr[i] > n/2:\n            return i\n    return -1\n\nret1 = solution(3, [1, 2, 1, 3, 1, 2, 1])\nprint(\"solution 함수의 반환 값은 \", ret1, \" 입니다.\")\nret2 = solution(2, [2, 1, 2, 1, 2, 2, 1])\nprint(\"solution 함수의 반환 값은 \", ret2, \" 입니다.\")",
+    "hint": "과반수 기준은 후보 수(n)가 아니라 전체 투표 수(len(votes))입니다."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "4차",
+    "title": "[4 차] 문제 9",
+    "desc": "□ 문제 설명\n4 x 4 크기 격자 모양 지형에 위험 지역이 몇 개인지 알고 싶습니다. 위험지역이란 동, 서, 남, 북 인접한 지역이 모두 해당 지역보다 높은 지역입니다. 예를 들어 지역 높이가 아래와 같다면\n\n<table class='desc-table'><tbody><tr><td style='background-color:#ff4d4d; color:white;'>3</td><td>6</td><td style='background-color:#ff4d4d; color:white;'>2</td><td>8</td></tr><tr><td>7</td><td style='background-color:#ff4d4d; color:white;'>3</td><td>4</td><td style='background-color:#ff4d4d; color:white;'>2</td></tr><tr><td>8</td><td>6</td><td>7</td><td>3</td></tr><tr><td>5</td><td>3</td><td style='background-color:#ff4d4d; color:white;'>2</td><td>9</td></tr></tbody></table>\n\n빨간 영역은 인접한 지역이 모두 해당 지역보다 높은 위험지역입니다. 지역별 높이가 담긴 2 차원 리스트 height 가 solution 함수의 매개변수로 주어질 때, 위험 지역이 몇 개인지 return 하도록 solution 함수를 완성해 주세요.\n\n□ 매개변수 설명\n지역별 높이가 담긴 2차원 리스트 height가 solution 함수의 매개변수로 주어집니다.\n* 각 지역의 높이는 1 이상 50 이하인 자연수입니다.\n\n□ return 값 설명\n위험지역이 몇 개인지 return 해 주세요.\n\n□ 예시\n<table class='desc-table'><thead><tr><th>height</th><th>return</th></tr></thead><tbody><tr><td>[[3, 6, 2, 8], [7, 3, 4, 2], [8, 6, 7, 3], [5, 3, 2, 9]]</td><td>5</td></tr></tbody></table>\n\n<div class='desc-section-title'>예시 설명</div><div class='desc-text'>문제에 나온 예와 같습니다.</div>",
+    "expected": "solution 함수의 반환 값은 5 입니다.",
+    "initial": "def solution(height):\n    count = 0\n    # 여기에 코드를 작성해주세요.\n    return count\n\nheight = [[3, 6, 2, 8], [7, 3, 4, 2], [8, 6, 7, 3], [5, 3, 2, 9]]\nret = solution(height)\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+    "hint": "dx, dy 배열을 이용해 상하좌우를 탐색하고 모든 주변 칸이 자신보다 높은지 검사하세요."
+  },
+  {
+    "mainCat": "COS PRO 2급",
+    "subCat": "4차",
+    "title": "[4 차] 문제 10",
+    "desc": "□ 문제 설명\nXX 시험을 친 수험생들의 점수가 주어질 때, 합격자 수를 구하려 합니다. 시험에 합격하기 위해서는 커트라인 이상의 점수를 받아야 합니다.\n예를 들어 수험생들의 점수가 [80 점, 90 점, 55 점, 60 점, 59 점]이고, 커트라인이 60 점이라면 3 명이 합격했습니다.\n수험생들의 시험 점수가 들어 있는 리스트 scores, 커트라인 점수 cutline이 매개변수로 주어질 때, 합격자 수를 return 하도록 solution 함수를 완성해 주세요.\n\n□ 매개변수 설명\n수험생들의 시험 점수가 들어 있는 리스트 scores, 커트라인 점수 cutline이 solution 함수의 매개변수로 주어집니다.\n* scores의 원소는 각 학생의 시험 점수를 나타내며 0 이상 100 이하의 정수입니다.\n* scores의 길이는 1 이상 100 이하입니다.\n* cutline은 0 이상 100 이하의 정수입니다.\n\n□ return 값 설명\n합격자의 수를 return 합니다.\n\n□ 예시\n<table class='desc-table'><thead><tr><th>scores</th><th>cutline</th><th>result</th></tr></thead><tbody><tr><td>[80, 90, 55, 60, 59]</td><td>60</td><td>3</td></tr></tbody></table>\n\n<div class='desc-section-title'>예시 설명</div><div class='desc-text'>• 80 점, 90 점, 60 점은 합격입니다.<br>• 55 점, 59 점은 불합격입니다.<br>따라서 3 명이 합격했습니다.</div>",
+    "expected": "solution 함수의 반환 값은 3 입니다.",
+    "initial": "def solution(scores, cutline):\n    answer = 0\n    # 여기에 코드를 작성해주세요.\n    return answer\n\nscores = [80, 90, 55, 60, 59]\ncutline = 60\nret = solution(scores, cutline)\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+    "hint": "반복문을 돌며 s >= cutline 인 개수를 카운트하세요."
+  }
+]
