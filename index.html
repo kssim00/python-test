@@ -1,3 +1,5 @@
+--- START OF FILE index.html ---
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -284,6 +286,9 @@
                 fetch(`${MASTER_CLOUD_URL}?action=save&name=${encodeURIComponent(currentUser)}&id=${p.id}`);
                 if(!solvedIds.includes(p.id)) { solvedIds.push(p.id); renderList(); }
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            } else {
+                // 오답 메시지 추가 로직
+                document.getElementById('output').innerHTML += "\n\n<b style='color: #ff4d4d;'>❌ 오답입니다. 다시 시도해보세요!</b>";
             }
         } catch(e) { document.getElementById('output').innerText = "에러: " + e.message; }
     }
