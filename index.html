@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>코드:앤 파이썬 스튜디오 (v11.2)</title>
+    <title>코드:앤 파이썬 스튜디오 (v11.3)</title>
     <!-- 라이브러리 로드 -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/loader.min.js"></script>
@@ -32,13 +32,19 @@
         .example-box { background: #2d2d2d; border-radius: 8px; padding: 15px; border: 1px solid #444; color: #eee; font-family: 'Courier New', monospace; margin: 12px 0; }
         .resizer-h { width: 8px; cursor: col-resize; background: transparent; z-index: 50; margin: 0 -4px; }
         .resizer-h:hover { background: rgba(0, 122, 204, 0.4); }
-        .resizer-v { height: 10px; cursor: row-resize; background: transparent; z-index: 60; margin: -5px 0; position: relative; }
+        .resizer-v { height: 10px; cursor: row-resize; background: transparent; z-index: 101; margin: -5px 0; position: relative; }
         .resizer-v:hover { background: rgba(0, 122, 204, 0.4); }
         .editor-section { flex: 1; display: flex; flex-direction: column; min-width: 200px; position: relative; overflow: hidden; }
         #editor-container { flex: 1; width: 100%; }
-        .console-area { height: 200px; min-height: 35px; background: #000; padding: 8px 15px; border-top: 1px solid #333; overflow-y: auto; flex-shrink: 0; }
+        .console-area { height: 200px; min-height: 35px; background: #000; padding: 8px 15px; border-top: 1px solid #333; overflow-y: auto; flex-shrink: 0; position: relative; }
         #output { color: #00ff00; font-family: 'Courier New', monospace; white-space: pre-wrap; font-size: 14px; margin-top: 5px; }
         .btn-run { position: absolute; right: 25px; top: 15px; z-index: 100; background: #28a745; color: white; border: none; padding: 8px 20px; cursor: pointer; font-weight: bold; border-radius: 4px; }
+        
+        /* 돋보기 버튼 위치 수정: 에디터 오른쪽 하단 고정 */
+        .zoom-controls { position: absolute; right: 25px; bottom: 215px; z-index: 100; display: flex; gap: 5px; transition: bottom 0.1s; }
+        .btn-zoom { background: #3c3c3c; color: white; border: 1px solid #555; width: 32px; height: 32px; cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+        .btn-zoom:hover { background: #505050; }
+
         .main-cat-header { padding: 12px 15px; font-size: 11px; font-weight: bold; color: #fff; background: #37373d; cursor: pointer; border-bottom: 1px solid #222; }
         .sub-cat-header { padding: 10px 15px 10px 25px; font-size: 11px; font-weight: bold; color: #999; background: #2d2d2d; cursor: pointer; border-bottom: 1px solid #222; }
         .prob-item { padding: 8px 15px 8px 40px; cursor: pointer; font-size: 12px; color: #aaa; border-bottom: 1px solid #282828; }
@@ -100,6 +106,13 @@
         <div class="editor-section">
             <button id="run-btn" class="btn-run" onclick="runCode()"><i class="fas fa-play"></i> RUN (Ctrl+Enter)</button>
             <div id="editor-container"></div>
+            
+            <!-- 돋보기 버튼 위치 수정 -->
+            <div class="zoom-controls" id="zoom-area">
+                <button class="btn-zoom" onclick="changeFontSize(2)" title="글자 크게"><i class="fas fa-search-plus"></i></button>
+                <button class="btn-zoom" onclick="changeFontSize(-2)" title="글자 작게"><i class="fas fa-search-minus"></i></button>
+            </div>
+
             <div class="resizer-v" id="resizer-v"></div>
             <div class="console-area" id="panel-terminal">
                 <div style="display:flex; justify-content:space-between; border-bottom: 1px solid #222; padding-bottom: 3px;"><span style="color: #666; font-size: 10px; font-weight: bold;">TERMINAL</span><i class="fas fa-trash-alt" style="color:#444; font-size:10px; cursor:pointer;" onclick="document.getElementById('output').innerText=''"></i></div>
@@ -109,7 +122,7 @@
     </div>
 </div>
 
-<!-- 마스터 센터 (전체 코드 복구) -->
+<!-- 마스터 센터 -->
 <div id="admin-panel" class="floating-panel">
     <div style="display:flex; justify-content:space-between; margin-bottom:15px;"><h2>마스터 센터</h2><button onclick="closePanels()">닫기</button></div>
     <div class="admin-flex">
@@ -172,6 +185,7 @@
 
     let problems = [], solvedIds = [], currentIdx = -1, pyodide, editor, isDragging = false;
     let currentUser = "", openMainCats = [], openSubCats = [], targetMode = "", allStatsData = [];
+    let currentFontSize = 16;
 
     const getSaveKey = (id) => `code_save_${currentUser}_${id}`;
 
@@ -179,7 +193,7 @@
         require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs' }});
         require(['vs/editor/editor.main'], async function() {
             editor = monaco.editor.create(document.getElementById('editor-container'), { 
-                value: "", language: 'python', theme: 'vs-dark', fontSize: 16, automaticLayout: true, minimap: { enabled: false }
+                value: "", language: 'python', theme: 'vs-dark', fontSize: currentFontSize, automaticLayout: true, minimap: { enabled: false }
             });
             editor.onDidChangeModelContent(() => { if(currentIdx !== -1) localStorage.setItem(getSaveKey(currentIdx), editor.getValue()); });
             editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, runCode);
@@ -189,6 +203,13 @@
             } catch(e){}
             document.getElementById('loader').style.display='none';
         });
+    }
+
+    function changeFontSize(delta) {
+        currentFontSize += delta;
+        if(currentFontSize < 10) currentFontSize = 10;
+        if(currentFontSize > 40) currentFontSize = 40;
+        editor.updateOptions({ fontSize: currentFontSize });
     }
 
     async function refreshData() {
@@ -224,9 +245,18 @@
     function initResizing() {
         const hExp = document.getElementById('resizer-explorer'), hDesc = document.getElementById('resizer-h'), vTerm = document.getElementById('resizer-v');
         const pExp = document.getElementById('panel-explorer'), pDesc = document.getElementById('panel-desc'), pTerm = document.getElementById('panel-terminal');
+        const zoomArea = document.getElementById('zoom-area');
+
         hExp.onmousedown = (e) => { isDragging = true; const move = (ev) => { let w = ev.clientX - 50; if (w > 80 && w < 500) { pExp.style.width = w + "px"; editor.layout(); } }; const up = () => { isDragging = false; window.removeEventListener('mousemove', move); }; window.addEventListener('mousemove', move); window.addEventListener('mouseup', up); };
         hDesc.onmousedown = (e) => { isDragging = true; const move = (ev) => { let w = ev.clientX - pExp.offsetWidth - 58; if (w > 150 && w < window.innerWidth - 400) { pDesc.style.width = w + "px"; editor.layout(); } }; const up = () => { isDragging = false; window.removeEventListener('mousemove', move); }; window.addEventListener('mousemove', move); window.addEventListener('mouseup', up); };
-        vTerm.onmousedown = (e) => { isDragging = true; const move = (ev) => { let h = window.innerHeight - ev.clientY; if (h > 35 && h < window.innerHeight - 150) { pTerm.style.height = h + "px"; editor.layout(); } }; const up = () => { isDragging = false; window.removeEventListener('mousemove', move); }; window.addEventListener('mousemove', move); window.addEventListener('mouseup', up); };
+        vTerm.onmousedown = (e) => { isDragging = true; const move = (ev) => { 
+            let h = window.innerHeight - ev.clientY; 
+            if (h > 35 && h < window.innerHeight - 150) { 
+                pTerm.style.height = h + "px"; 
+                zoomArea.style.bottom = (h + 15) + "px"; // 터미널 높이에 따라 돋보기 버튼 위치 동적 조절
+                editor.layout(); 
+            } 
+        }; const up = () => { isDragging = false; window.removeEventListener('mousemove', move); }; window.addEventListener('mousemove', move); window.addEventListener('mouseup', up); };
     }
 
     function renderList() {
@@ -277,21 +307,25 @@
         try {
             await pyodide.runPythonAsync(`import sys, io\nsys.stdout = io.StringIO()`);
             await pyodide.runPythonAsync(editor.getValue());
-            const res = pyodide.runPython("sys.stdout.getvalue()").trim();
+            
+            // 결과값 정밀 가공 (공백, 캐리지 리턴 제거)
+            const res = pyodide.runPython("sys.stdout.getvalue()").replace(/\r/g, "").trim();
+            const expected = p.expected.toString().replace(/\r/g, "").trim();
+            
             document.getElementById('output').innerText = res;
-            if(res === p.expected.toString().trim()) {
+
+            // 정답 비교 강화
+            if(res === expected) {
                 document.getElementById('output').innerHTML += "\n\n<b style='color: yellow;'>🎉 정답입니다!</b>";
                 fetch(`${MASTER_CLOUD_URL}?action=save&name=${encodeURIComponent(currentUser)}&id=${p.id}`);
                 if(!solvedIds.includes(p.id)) { solvedIds.push(p.id); renderList(); }
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             } else {
-                // 오답 메시지 추가 로직
                 document.getElementById('output').innerHTML += "\n\n<b style='color: #ff4d4d;'>❌ 오답입니다. 다시 시도해보세요!</b>";
             }
         } catch(e) { document.getElementById('output').innerText = "에러: " + e.message; }
     }
 
-    // [중요] 관리자 비밀번호 초기화 기능 보강
     function askPw(mode) { targetMode = mode; document.getElementById('pw-input').value = ""; document.getElementById('pw-modal').style.display = 'flex'; document.getElementById('pw-input').focus(); }
     function checkPw() { if(document.getElementById('pw-input').value === ADMIN_PW) { document.getElementById('pw-input').value = ""; closePanels(); if(targetMode === 'dashboard') showStats(); else { document.getElementById('admin-panel').style.display='block'; renderSortManager(); } } else { document.getElementById('pw-input').value = ""; alert("불일치"); } }
     
