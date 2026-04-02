@@ -10,15 +10,15 @@
     "hint": "각 사이즈의 빈도를 저장할 리스트(answer)를 [0,0,0,0,0,0]으로 초기화하고 조건문을 사용하세요."
   },
   {
-    "mainCat": "COS PRO 2급",
-    "subCat": "1차",
-    "id": 1002,
-    "title": "[1 차] 문제 2",
-    "desc": "<div class='desc-text'>A 쇼핑몰에서는 회원 등급에 따라 할인 서비스를 제공합니다. 회원 등급에 따른 할인율은 다음과 같습니다.<br>(S = 실버, G = 골드, V = VIP)<br><table class='desc-table'><thead><tr><th>등급</th><th>할인율</th></tr></thead><tbody><tr><td>“S”</td><td>5%</td></tr><tr><td>“G”</td><td>10%</td></tr><tr><td>“V”</td><td>15%</td></tr></tbody></table><br>상품의 가격 price 와 구매자의 회원 등급을 나타내는 문자열 grade 가 매개변수로 주어질 때, 할인 서비스를 적용한 가격을 return 하도록 solution 함수를 완성해 주세요.</div><div class='desc-section-title'>매개변수 설명</div><div class='desc-text'>상품의 가격 price와 회원 등급 grade가 매개변수로 주어집니다.<br>* price는 100 이상 100,000 이하의 100단위 자연수입니다.<br>* grade는 \"S\", \"G\", \"V\" 세 가지 중 하나입니다.</div><div class='desc-section-title'>Return 값 설명</div><div class='desc-text'>할인한 가격을 return 하도록 solution 함수를 작성해 주세요.</div><div class='desc-section-title'>예시</div><table class='desc-table'><thead><tr><th>price</th><th>grade</th><th>return</th></tr></thead><tbody><tr><td>2500</td><td>“V”</td><td>2125</td></tr><tr><td>96900</td><td>“S”</td><td>92055</td></tr></tbody></table><div class='desc-section-title'>예시 설명</div><div class='desc-text'>예시 #1<br>2500 원의 15%는 375 원입니다. 2500 - 375 = 2125 입니다.<br>예시 #2<br>96900 원의 5%는 4845 원입니다. 96900 - 4845 = 92055 입니다.</div>",
-    "expected": "Solution: return value of the function is 2125 .\nSolution: return value of the function is 92055 .",
-    "initial": "#You may use import as below.\n#import math\n\ndef solution(price, grade):\n    #Write code here.\n    answer = 0\n    return answer\n\n#The following is code to output testcase.\nprice1 = 2500\ngrade1 = \"V\"\nret1 = solution(price1, grade1)\n\n#Press Run button to receive output.\nprint(\"Solution: return value of the function is\", ret1, \".\")\n    \nprice2 = 96900\ngrade2 = \"S\"\nret2 = solution(price2, grade2)\n\n#Press Run button to receive output.\nprint(\"Solution: return value of the function is\", ret2, \".\")",
-    "hint": "등급별 할인율을 적용해 계산한 후 int() 함수로 소수점을 버리세요."
-  },
+  "mainCat": "COS PRO 2급",
+  "subCat": "1차",
+  "id": 1002,
+  "title": "[1 차] 문제 2",
+  "desc": "<div class='desc-text'>A 쇼핑몰에서는 회원 등급에 따라 할인 서비스를 제공합니다. 회원 등급에 따른 할인율은 다음과 같습니다.<br>(S = 실버, G = 골드, V = VIP)<br><table class='desc-table'><thead><tr><th>등급</th><th>할인율</th></tr></thead><tbody><tr><td>“S”</td><td>5%</td></tr><tr><td>“G”</td><td>10%</td></tr><tr><td>“V”</td><td>15%</td></tr></tbody></table><br>상품의 가격 price 와 구매자의 회원 등급을 나타내는 문자열 grade 가 매개변수로 주어질 때, 할인 서비스를 적용한 가격을 return 하도록 solution 함수를 완성해 주세요.</div><div class='desc-section-title'>매개변수 설명</div><div class='desc-text'>상품의 가격 price와 회원 등급 grade가 매개변수로 주어집니다.<br>* price는 100 이상 100,000 이하의 100단위 자연수입니다.<br>* grade는 \"S\", \"G\", \"V\" 세 가지 중 하나입니다.</div><div class='desc-section-title'>Return 값 설명</div><div class='desc-text'>할인한 가격을 return 하도록 solution 함수를 작성해 주세요.</div><div class='desc-section-title'>예시</div><table class='desc-table'><thead><tr><th>price</th><th>grade</th><th>return</th></tr></thead><tbody><tr><td>2500</td><td>“V”</td><td>2125</td></tr><tr><td>96900</td><td>“S”</td><td>92055</td></tr></tbody></table><div class='desc-section-title'>예시 설명</div><div class='desc-text'>예시 #1<br>2500 원의 15%는 375 원입니다. 2500 - 375 = 2125 입니다.<br>예시 #2<br>96900 원의 5%는 4845 원입니다. 96900 - 4845 = 92055 입니다.</div>",
+  "expected": "Solution: return value of the function is 2125 .\nSolution: return value of the function is 92055 .",
+  "initial": "#You may use import as below.\n#import math\n\ndef solution(price, grade):\n    #Write code here.\n    answer = 0\n    return answer\n\n#The following is code to output testcase.\nprice1 = 2500\ngrade1 = \"V\"\nret1 = solution(price1, grade1)\n\n#Press Run button to receive output.\nprint(\"Solution: return value of the function is\", ret1, \".\")\n    \nprice2 = 96900\ngrade2 = \"S\"\nret2 = solution(price2, grade2)\n\n#Press Run button to receive output.\nprint(\"Solution: return value of the function is\", ret2, \".\")",
+  "hint": "등급별 할인율을 적용해 계산한 후 int() 함수로 소수점을 버리세요."
+},
   {
     "mainCat": "COS PRO 2급",
     "subCat": "1차",
