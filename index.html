@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>코드:앤 파이썬 스튜디오 (v11.3)</title>
+    <title>코드:앤 파이썬 스튜디오 (v11.7)</title>
     <!-- 라이브러리 로드 -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/loader.min.js"></script>
@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        /* [v11.1 스타일 유지] */
+        /* [스타일 설정 유지] */
         :root { --vscode-bg: #1e1e1e; --vscode-side: #252526; --vscode-accent: #007acc; --vscode-text: #cccccc; }
         html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: var(--vscode-bg); color: var(--vscode-text); font-family: 'Pretendard', sans-serif; }
         .app-wrapper { display: none; height: 100vh; width: 100vw; overflow: hidden; display: flex; }
@@ -38,9 +38,12 @@
         #editor-container { flex: 1; width: 100%; }
         .console-area { height: 200px; min-height: 35px; background: #000; padding: 8px 15px; border-top: 1px solid #333; overflow-y: auto; flex-shrink: 0; position: relative; }
         #output { color: #00ff00; font-family: 'Courier New', monospace; white-space: pre-wrap; font-size: 14px; margin-top: 5px; }
-        .btn-run { position: absolute; right: 25px; top: 15px; z-index: 100; background: #28a745; color: white; border: none; padding: 8px 20px; cursor: pointer; font-weight: bold; border-radius: 4px; }
         
-        /* 돋보기 버튼 위치 수정: 에디터 오른쪽 하단 고정 */
+        .btn-group { position: absolute; right: 25px; top: 15px; z-index: 100; display: flex; gap: 8px; }
+        .btn-run { background: #28a745; color: white; border: none; padding: 8px 20px; cursor: pointer; font-weight: bold; border-radius: 4px; }
+        .btn-reset { background: #444; color: #ccc; border: none; padding: 8px 12px; cursor: pointer; font-weight: bold; border-radius: 4px; }
+        .btn-reset:hover { background: #555; color: white; }
+
         .zoom-controls { position: absolute; right: 25px; bottom: 215px; z-index: 100; display: flex; gap: 5px; transition: bottom 0.1s; }
         .btn-zoom { background: #3c3c3c; color: white; border: 1px solid #555; width: 32px; height: 32px; cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
         .btn-zoom:hover { background: #505050; }
@@ -104,10 +107,12 @@
         </div>
         <div class="resizer-h" id="resizer-h"></div>
         <div class="editor-section">
-            <button id="run-btn" class="btn-run" onclick="runCode()"><i class="fas fa-play"></i> RUN (Ctrl+Enter)</button>
+            <div class="btn-group">
+                <button title="현재 문제 초기화" class="btn-reset" onclick="resetCurrentCode()"><i class="fas fa-undo"></i></button>
+                <button id="run-btn" class="btn-run" onclick="runCode()"><i class="fas fa-play"></i> RUN (Ctrl+Enter)</button>
+            </div>
             <div id="editor-container"></div>
             
-            <!-- 돋보기 버튼 위치 수정 -->
             <div class="zoom-controls" id="zoom-area">
                 <button class="btn-zoom" onclick="changeFontSize(2)" title="글자 크게"><i class="fas fa-search-plus"></i></button>
                 <button class="btn-zoom" onclick="changeFontSize(-2)" title="글자 작게"><i class="fas fa-search-minus"></i></button>
@@ -143,7 +148,7 @@
             </div>
             <div id="admin-cat-view" style="display:none; flex:1; overflow-y:auto;">
                 <table class="master-table">
-                    <thead><tr><th>카테고리</th><th>이동</th></tr></thead>
+                    <thead><tr><th>상위 > 하위 카테고리</th><th>기능</th></tr></thead>
                     <tbody id="cat-sort-body"></tbody>
                 </table>
             </div>
@@ -180,8 +185,9 @@
 </div>
 
 <script>
-    const MASTER_CLOUD_URL = "https://script.google.com/macros/s/AKfycbxECzN-NGJWsrx466aoGcodQICqQY2UeNVBJ4_CR8gyxi2TerpznaZAX7xCLw530Yk1/exec";
-    const GITHUB_USER = "kssim00", GITHUB_REPO = "python-test", ADMIN_PW = "1234";
+    // [Cloud URL 및 비밀번호 업데이트]
+    const MASTER_CLOUD_URL = "https://script.google.com/macros/s/AKfycbyG6673JHkbiPuKOicUs44Q0vzpI-GA4xtcipoUVldFMnNpTAntEmZ7R1QEKjSlKkgT/exec";
+    const GITHUB_USER = "kssim00", GITHUB_REPO = "python-test", ADMIN_PW = "258799";
 
     let problems = [], solvedIds = [], currentIdx = -1, pyodide, editor, isDragging = false;
     let currentUser = "", openMainCats = [], openSubCats = [], targetMode = "", allStatsData = [];
@@ -210,6 +216,36 @@
         if(currentFontSize < 10) currentFontSize = 10;
         if(currentFontSize > 40) currentFontSize = 40;
         editor.updateOptions({ fontSize: currentFontSize });
+    }
+
+    function resetCurrentCode() {
+        if(currentIdx === -1) return;
+        const p = problems.find(x => x.id === currentIdx);
+        if(!p) return;
+        if(confirm("작성한 코드를 모두 지우고 처음 상태로 되돌리시겠습니까?")) {
+            localStorage.removeItem(getSaveKey(currentIdx));
+            editor.setValue(p.initial || "");
+            document.getElementById('output').innerText = "코드가 초기화되었습니다.";
+        }
+    }
+
+    function resetCategoryCode(mainCat, subCat) {
+        if(!confirm(`[${mainCat} > ${subCat}] 카테고리의 모든 저장된 코드를 삭제하시겠습니까?\n(정답 기록은 유지되며 작성한 코드만 초기화됩니다.)`)) return;
+        
+        let count = 0;
+        problems.forEach(p => {
+            if(p.mainCat === mainCat && p.subCat === subCat) {
+                localStorage.removeItem(getSaveKey(p.id));
+                count++;
+            }
+        });
+
+        const curProb = problems.find(x => x.id === currentIdx);
+        if(curProb && curProb.mainCat === mainCat && curProb.subCat === subCat) {
+            editor.setValue(curProb.initial || "");
+        }
+        
+        alert(`[${mainCat} > ${subCat}] 내 ${count}개 문제가 초기화되었습니다.`);
     }
 
     async function refreshData() {
@@ -253,7 +289,7 @@
             let h = window.innerHeight - ev.clientY; 
             if (h > 35 && h < window.innerHeight - 150) { 
                 pTerm.style.height = h + "px"; 
-                zoomArea.style.bottom = (h + 15) + "px"; // 터미널 높이에 따라 돋보기 버튼 위치 동적 조절
+                zoomArea.style.bottom = (h + 15) + "px"; 
                 editor.layout(); 
             } 
         }; const up = () => { isDragging = false; window.removeEventListener('mousemove', move); }; window.addEventListener('mousemove', move); window.addEventListener('mouseup', up); };
@@ -307,14 +343,9 @@
         try {
             await pyodide.runPythonAsync(`import sys, io\nsys.stdout = io.StringIO()`);
             await pyodide.runPythonAsync(editor.getValue());
-            
-            // 결과값 정밀 가공 (공백, 캐리지 리턴 제거)
             const res = pyodide.runPython("sys.stdout.getvalue()").replace(/\r/g, "").trim();
             const expected = p.expected.toString().replace(/\r/g, "").trim();
-            
             document.getElementById('output').innerText = res;
-
-            // 정답 비교 강화
             if(res === expected) {
                 document.getElementById('output').innerHTML += "\n\n<b style='color: yellow;'>🎉 정답입니다!</b>";
                 fetch(`${MASTER_CLOUD_URL}?action=save&name=${encodeURIComponent(currentUser)}&id=${p.id}`);
@@ -363,14 +394,54 @@
 
     function renderCatManager() {
         const b = document.getElementById('cat-sort-body'); b.innerHTML = "";
-        const cats = [...new Set(problems.map(p => p.subCat))];
-        cats.forEach((c, i) => {
-            b.innerHTML += `<tr><td style='text-align:left; font-weight:bold;'>${c}</td><td><button class='btn-mini' style='background:#007acc;' onclick='moveCategory("${c}",-1)'>▲ 위로</button><button class='btn-mini' style='background:#007acc;' onclick='moveCategory("${c}",1)'>▼ 아래로</button></td></tr>`;
+        const catPairs = [];
+        problems.forEach(p => {
+            if(!catPairs.find(x => x.m === p.mainCat && x.s === p.subCat)) {
+                catPairs.push({ m: p.mainCat, s: p.subCat });
+            }
+        });
+
+        catPairs.forEach((pair, i) => {
+            b.innerHTML += `<tr>
+                <td style='text-align:left; font-size:11px;'>
+                    <span style="color:#888;">${pair.m} > </span>
+                    <span style="color:#fff; font-weight:bold;">${pair.s}</span>
+                </td>
+                <td>
+                    <button class='btn-mini' style='background:#007acc;' onclick='moveCategory("${pair.m}", "${pair.s}", -1)'>▲</button>
+                    <button class='btn-mini' style='background:#007acc;' onclick='moveCategory("${pair.m}", "${pair.s}", 1)'>▼</button>
+                    <button class='btn-mini' style='background:#8b0000; margin-left:10px;' onclick='resetCategoryCode("${pair.m}", "${pair.s}")'><i class="fas fa-trash-alt"></i> 초기화</button>
+                </td>
+            </tr>`;
         });
     }
 
     function moveProb(idx, dir) { let t = idx + dir; if (t < 0 || t >= problems.length) return; let tmp = problems[idx]; problems[idx] = problems[t]; problems[t] = tmp; renderSortManager(); renderList(); }
-    function moveCategory(name, dir) { const cats = [...new Set(problems.map(p => p.subCat))]; const cur = cats.indexOf(name); const tar = cur + dir; if(tar < 0 || tar >= cats.length) return; cats.splice(cur, 1); cats.splice(tar, 0, name); let nO = []; cats.forEach(s => { nO = [...nO, ...problems.filter(p => p.subCat === s)]; }); problems = nO; renderCatManager(); renderList(); }
+    
+    function moveCategory(mName, sName, dir) { 
+        const catPairs = [];
+        problems.forEach(p => {
+            if(!catPairs.find(x => x.m === p.mainCat && x.s === p.subCat)) {
+                catPairs.push({ m: p.mainCat, s: p.subCat });
+            }
+        });
+        const cur = catPairs.findIndex(x => x.m === mName && x.s === sName);
+        const tar = cur + dir; 
+        if(tar < 0 || tar >= catPairs.length) return; 
+        
+        const tmp = catPairs[cur];
+        catPairs[cur] = catPairs[tar];
+        catPairs[tar] = tmp;
+
+        let nO = []; 
+        catPairs.forEach(pair => { 
+            nO = [...nO, ...problems.filter(p => p.mainCat === pair.m && p.subCat === pair.s)]; 
+        }); 
+        problems = nO; 
+        renderCatManager(); 
+        renderList(); 
+    }
+
     function toggleAllChecks() { const cs = document.querySelectorAll('.p-check'); const all = Array.from(cs).every(c => c.checked); cs.forEach(c => c.checked = !all); }
     function deleteSelected() { const cs = document.querySelectorAll('.p-check:checked'); if(!confirm("삭제?")) return; const ids = Array.from(cs).map(c => parseInt(c.dataset.idx)).sort((a,b)=>b-a); ids.forEach(i => problems.splice(i, 1)); renderSortManager(); renderList(); }
     function switchAdminTab(t) { document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); if(t==='prob') { document.getElementById('tab-prob').classList.add('active'); document.getElementById('admin-prob-view').style.display='block'; document.getElementById('admin-cat-view').style.display='none'; renderSortManager(); } else { document.getElementById('tab-cat').classList.add('active'); document.getElementById('admin-prob-view').style.display='none'; document.getElementById('admin-cat-view').style.display='block'; renderCatManager(); } }
