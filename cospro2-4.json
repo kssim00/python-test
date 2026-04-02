@@ -72,14 +72,14 @@
     "hint": "과반수 기준은 후보 수(n)가 아니라 전체 투표 수(len(votes))입니다."
   },
   {
-    "mainCat": "COS PRO 2급",
-    "subCat": "4차",
-    "title": "[4 차] 문제 9",
-    "desc": "□ 문제 설명\n4 x 4 크기 격자 모양 지형에 위험 지역이 몇 개인지 알고 싶습니다. 위험지역이란 동, 서, 남, 북 인접한 지역이 모두 해당 지역보다 높은 지역입니다. 예를 들어 지역 높이가 아래와 같다면\n\n<table class='desc-table'><tbody><tr><td style='background-color:#ff4d4d; color:white;'>3</td><td>6</td><td style='background-color:#ff4d4d; color:white;'>2</td><td>8</td></tr><tr><td>7</td><td style='background-color:#ff4d4d; color:white;'>3</td><td>4</td><td style='background-color:#ff4d4d; color:white;'>2</td></tr><tr><td>8</td><td>6</td><td>7</td><td>3</td></tr><tr><td>5</td><td>3</td><td style='background-color:#ff4d4d; color:white;'>2</td><td>9</td></tr></tbody></table>\n\n빨간 영역은 인접한 지역이 모두 해당 지역보다 높은 위험지역입니다. 지역별 높이가 담긴 2 차원 리스트 height 가 solution 함수의 매개변수로 주어질 때, 위험 지역이 몇 개인지 return 하도록 solution 함수를 완성해 주세요.\n\n□ 매개변수 설명\n지역별 높이가 담긴 2차원 리스트 height가 solution 함수의 매개변수로 주어집니다.\n* 각 지역의 높이는 1 이상 50 이하인 자연수입니다.\n\n□ return 값 설명\n위험지역이 몇 개인지 return 해 주세요.\n\n□ 예시\n<table class='desc-table'><thead><tr><th>height</th><th>return</th></tr></thead><tbody><tr><td>[[3, 6, 2, 8], [7, 3, 4, 2], [8, 6, 7, 3], [5, 3, 2, 9]]</td><td>5</td></tr></tbody></table>\n\n<div class='desc-section-title'>예시 설명</div><div class='desc-text'>문제에 나온 예와 같습니다.</div>",
-    "expected": "solution 함수의 반환 값은 5 입니다.",
-    "initial": "def solution(height):\n    count = 0\n    # 여기에 코드를 작성해주세요.\n    return count\n\nheight = [[3, 6, 2, 8], [7, 3, 4, 2], [8, 6, 7, 3], [5, 3, 2, 9]]\nret = solution(height)\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
-    "hint": "dx, dy 배열을 이용해 상하좌우를 탐색하고 모든 주변 칸이 자신보다 높은지 검사하세요."
-  },
+  "mainCat": "COS PRO 2급",
+  "subCat": "4차",
+  "title": "[4 차] 문제 9",
+  "desc": "<div class='desc-text'>□ 문제 설명<br>4 x 4 크기 격자 모양 지형에 위험 지역이 몇 개인지 알고 싶습니다. 위험지역이란 동, 서, 남, 북 인접한 지역이 모두 해당 지역보다 높은 지역입니다. 예를 들어 지역 높이가 아래와 같다면<br><br><table style='border-collapse: collapse; width: 300px; height: 300px; text-align: center; font-size: 20px; font-weight: bold; border: 2px solid #333;'><tbody><tr style='height: 75px;'><td style='background-color:#ff4d4d; color:white; border: 1px solid #ccc;'>3</td><td style='border: 1px solid #ccc;'>6</td><td style='background-color:#ff4d4d; color:white; border: 1px solid #ccc;'>2</td><td style='border: 1px solid #ccc;'>8</td></tr><tr style='height: 75px;'><td style='border: 1px solid #ccc;'>7</td><td style='background-color:#ff4d4d; color:white; border: 1px solid #ccc;'>3</td><td style='border: 1px solid #ccc;'>4</td><td style='background-color:#ff4d4d; color:white; border: 1px solid #ccc;'>2</td></tr><tr style='height: 75px;'><td style='border: 1px solid #ccc;'>8</td><td style='border: 1px solid #ccc;'>6</td><td style='border: 1px solid #ccc;'>7</td><td style='border: 1px solid #ccc;'>3</td></tr><tr style='height: 75px;'><td style='border: 1px solid #ccc;'>5</td><td style='border: 1px solid #ccc;'>3</td><td style='background-color:#ff4d4d; color:white; border: 1px solid #ccc;'>2</td><td style='border: 1px solid #ccc;'>9</td></tr></tbody></table><br>빨간 영역은 인접한 지역이 모두 해당 지역보다 높은 위험지역입니다. 지역별 높이가 담긴 2 차원 리스트 height 가 solution 함수의 매개변수로 주어질 때, 위험 지역이 몇 개인지 return 하도록 solution 함수를 완성해 주세요.</div><br><div class='desc-section-title'>□ 매개변수 설명</div><div class='desc-text'>지역별 높이가 담긴 2차원 리스트 height가 solution 함수의 매개변수로 주어집니다.<br>* 각 지역의 높이는 1 이상 50 이하인 자연수입니다.</div><br><div class='desc-section-title'>□ return 값 설명</div><div class='desc-text'>위험지역이 몇 개인지 return 해 주세요.</div><br><div class='desc-section-title'>□ 예시</div><table class='desc-table'><thead><tr><th>height</th><th>return</th></tr></thead><tbody><tr><td>[[3, 6, 2, 8], [7, 3, 4, 2], [8, 6, 7, 3], [5, 3, 2, 9]]</td><td>5</td></tr></tbody></table><br><div class='desc-section-title'>예시 설명</div><div class='desc-text'>문제에 나온 예와 같습니다.</div>",
+  "expected": "solution 함수의 반환 값은 5 입니다.",
+  "initial": "def solution(height):\n    count = 0\n    # 여기에 코드를 작성해주세요.\n    return count\n\nheight = [[3, 6, 2, 8], [7, 3, 4, 2], [8, 6, 7, 3], [5, 3, 2, 9]]\nret = solution(height)\nprint(\"solution 함수의 반환 값은\", ret, \"입니다.\")",
+  "hint": "dx, dy 배열을 이용해 상하좌우를 탐색하고 모든 주변 칸이 자신보다 높은지 검사하세요."
+},
   {
     "mainCat": "COS PRO 2급",
     "subCat": "4차",
