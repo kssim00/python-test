@@ -1,4 +1,4 @@
-<!-- v12.2 - 정답 판정 로직 수정 + 초기화 기능 및 엔터키 로그인 보완 버전 -->
+<!-- v12.3 - 초기화 동기화 완벽 수정 버전 -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -79,8 +79,8 @@
 <div id="login-screen" class="overlay">
     <div style="background:#252526; padding:40px; border-radius:15px; width:300px; text-align:center; border:1px solid #444;">
         <h2 style="color:white; margin-bottom:20px;">코드:앤 파이썬 스튜디오</h2>
-        <!-- 엔터키 인식 개선: onkeydown 사용 -->
-        <input type="text" id="user-name" class="admin-input" style="width:100%; padding:12px; box-sizing:border-box; text-align:center;" placeholder="학생 이름 입력" onkeydown="if(event.key === 'Enter') login()">
+        <!-- 엔터키 로그인 대응 -->
+        <input type="text" id="user-name" class="admin-input" style="width:100%; padding:12px; box-sizing:border-box; text-align:center;" placeholder="학생 이름 입력" onkeydown="if(event.key==='Enter') login()">
         <button onclick="login()" style="width:100%; background:#007acc; color:white; border:none; padding:12px; cursor:pointer; font-weight:bold; border-radius:4px; margin-top:5px;">학습 시작</button>
     </div>
 </div>
@@ -334,36 +334,26 @@
         editor.setValue(savedCode || p.initial || "");
     }
 
-    // [정답 판정 로직 수정]
     async function runCode() {
         if(!pyodide) return;
         const p = problems.find(x => x.id === currentIdx);
         if(!p) return;
-
         try {
             await pyodide.runPythonAsync(`import sys, io\nsys.stdout = io.StringIO()`);
             await pyodide.runPythonAsync(editor.getValue());
             const rawOutput = pyodide.runPython("sys.stdout.getvalue()");
             document.getElementById('output').innerText = rawOutput;
-
-            // 판정 로직: 정답지(expected)와 출력값(rawOutput) 모두 공백을 제거하고 비교
             const cleanExpected = p.expected.toString().replace(/\s/g, ""); 
             const cleanOutput = rawOutput.replace(/\s/g, ""); 
-
             if (cleanOutput.includes(cleanExpected) && cleanExpected !== "") {
                 document.getElementById('output').innerHTML += "\n\n<b style='color: yellow;'>🎉 정답입니다!</b>";
                 fetch(`${MASTER_CLOUD_URL}?action=save&name=${encodeURIComponent(currentUser)}&id=${p.id}`);
-                if(!solvedIds.includes(p.id)) { 
-                    solvedIds.push(p.id); 
-                    renderList(); 
-                }
+                if(!solvedIds.includes(p.id)) { solvedIds.push(p.id); renderList(); }
                 confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             } else {
                 document.getElementById('output').innerHTML += "\n\n<b style='color: #ff4d4d;'>❌ 오답입니다. 다시 시도해보세요!</b>";
             }
-        } catch(e) { 
-            document.getElementById('output').innerText = "에러: " + e.message; 
-        }
+        } catch(e) { document.getElementById('output').innerText = "에러: " + e.message; }
     }
 
     function askPw(mode) { targetMode = mode; document.getElementById('pw-input').value = ""; document.getElementById('pw-modal').style.display = 'flex'; document.getElementById('pw-input').focus(); }
@@ -396,58 +386,18 @@
 
     function renderSortManager() {
         const b = document.getElementById('sort-body'); b.innerHTML = "";
-        problems.forEach((p, i) => {
-            b.innerHTML += `<tr><td><input type='checkbox' class='p-check' data-idx='${i}'></td><td style='color:#777;'>${p.subCat}</td><td style='text-align:left;'>${p.title}</td><td><button class='btn-mini' style='background:#007acc;' onclick='moveProb(${i},-1)'>↑</button><button class='btn-mini' style='background:#007acc;' onclick='moveProb(${i},1)'>↓</button></td></tr>`;
-        });
+        problems.forEach((p, i) => { b.innerHTML += `<tr><td><input type='checkbox' class='p-check' data-idx='${i}'></td><td style='color:#777;'>${p.subCat}</td><td style='text-align:left;'>${p.title}</td><td><button class='btn-mini' style='background:#007acc;' onclick='moveProb(${i},-1)'>↑</button><button class='btn-mini' style='background:#007acc;' onclick='moveProb(${i},1)'>↓</button></td></tr>`; });
     }
 
     function renderCatManager() {
         const b = document.getElementById('cat-sort-body'); b.innerHTML = "";
         const catPairs = [];
-        problems.forEach(p => {
-            if(!catPairs.find(x => x.m === p.mainCat && x.s === p.subCat)) {
-                catPairs.push({ m: p.mainCat, s: p.subCat });
-            }
-        });
-        catPairs.forEach((pair, i) => {
-            b.innerHTML += `<tr>
-                <td style='text-align:left; font-size:11px;'>
-                    <span style="color:#888;">${pair.m} > </span>
-                    <span style="color:#fff; font-weight:bold;">${pair.s}</span>
-                </td>
-                <td>
-                    <button class='btn-mini' style='background:#007acc;' onclick='moveCategory("${pair.m}", "${pair.s}", -1)'>▲</button>
-                    <button class='btn-mini' style='background:#007acc;' onclick='moveCategory("${pair.m}", "${pair.s}", 1)'>▼</button>
-                    <button class='btn-mini' style='background:#8b0000; margin-left:10px;' onclick='resetCategoryCode("${pair.m}", "${pair.s}")'><i class="fas fa-trash-alt"></i> 초기화</button>
-                </td>
-            </tr>`;
-        });
+        problems.forEach(p => { if(!catPairs.find(x => x.m === p.mainCat && x.s === p.subCat)) { catPairs.push({ m: p.mainCat, s: p.subCat }); } });
+        catPairs.forEach((pair, i) => { b.innerHTML += `<tr><td style='text-align:left; font-size:11px;'><span style="color:#888;">${pair.m} > </span><span style="color:#fff; font-weight:bold;">${pair.s}</span></td><td><button class='btn-mini' style='background:#007acc;' onclick='moveCategory("${pair.m}", "${pair.s}", -1)'>▲</button><button class='btn-mini' style='background:#007acc;' onclick='moveCategory("${pair.m}", "${pair.s}", 1)'>▼</button><button class='btn-mini' style='background:#8b0000; margin-left:10px;' onclick='resetCategoryCode("${pair.m}", "${pair.s}")'><i class="fas fa-trash-alt"></i> 초기화</button></td></tr>`; });
     }
 
     function moveProb(idx, dir) { let t = idx + dir; if (t < 0 || t >= problems.length) return; let tmp = problems[idx]; problems[idx] = problems[t]; problems[t] = tmp; renderSortManager(); renderList(); }
-    
-    function moveCategory(mName, sName, dir) { 
-        const catPairs = [];
-        problems.forEach(p => {
-            if(!catPairs.find(x => x.m === p.mainCat && x.s === p.subCat)) {
-                catPairs.push({ m: p.mainCat, s: p.subCat });
-            }
-        });
-        const cur = catPairs.findIndex(x => x.m === mName && x.s === sName);
-        const tar = cur + dir; 
-        if(tar < 0 || tar >= catPairs.length) return; 
-        const tmp = catPairs[cur];
-        catPairs[cur] = catPairs[tar];
-        catPairs[tar] = tmp;
-        let nO = []; 
-        catPairs.forEach(pair => { 
-            nO = [...nO, ...problems.filter(p => p.mainCat === pair.m && p.subCat === pair.s)]; 
-        }); 
-        problems = nO; 
-        renderCatManager(); 
-        renderList(); 
-    }
-
+    function moveCategory(mName, sName, dir) { const catPairs = []; problems.forEach(p => { if(!catPairs.find(x => x.m === p.mainCat && x.s === p.subCat)) { catPairs.push({ m: p.mainCat, s: p.subCat }); } }); const cur = catPairs.findIndex(x => x.m === mName && x.s === sName); const tar = cur + dir; if(tar < 0 || tar >= catPairs.length) return; const tmp = catPairs[cur]; catPairs[cur] = catPairs[tar]; catPairs[tar] = tmp; let nO = []; catPairs.forEach(pair => { nO = [...nO, ...problems.filter(p => p.mainCat === pair.m && p.subCat === pair.s)]; }); problems = nO; renderCatManager(); renderList(); }
     function toggleAllChecks() { const cs = document.querySelectorAll('.p-check'); const all = Array.from(cs).every(c => c.checked); cs.forEach(c => c.checked = !all); }
     function deleteSelected() { const cs = document.querySelectorAll('.p-check:checked'); if(!confirm("삭제?")) return; const ids = Array.from(cs).map(c => parseInt(c.dataset.idx)).sort((a,b)=>b-a); ids.forEach(i => problems.splice(i, 1)); renderSortManager(); renderList(); }
     function switchAdminTab(t) { document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); if(t==='prob') { document.getElementById('tab-prob').classList.add('active'); document.getElementById('admin-prob-view').style.display='block'; document.getElementById('admin-cat-view').style.display='none'; renderSortManager(); } else { document.getElementById('tab-cat').classList.add('active'); document.getElementById('admin-prob-view').style.display='none'; document.getElementById('admin-cat-view').style.display='block'; renderCatManager(); } }
@@ -455,111 +405,75 @@
     function applyTestJson() { try { const d = JSON.parse(document.getElementById('test-json-input').value); problems = [...d.map((p,i)=>({id:99000+i,...p})), ...problems]; renderList(); alert("적용됨"); closePanels(); } catch(e){alert("JSON 오류");} }
     function exportJson() { const data = JSON.stringify(problems.map(({id, ...rest})=>rest), null, 2); document.getElementById('test-json-input').value = data; alert("추출됨"); }
     function closePanels() { document.querySelectorAll('.custom-modal, .floating-panel, #report-view').forEach(p=>p.style.display='none'); document.getElementById('pw-input').value = ""; }
-    
-    function smartFormatDesc(text) {
-        if (!text) return "";
-        let html = "", isExample = false;
-        text.split('\n').forEach(line => {
-            let t = line.trim();
-            if (/<table|<tr|<td|<th|<\/table|<\/tr|<\/td|<\/th>/.test(t)) { html += t; isExample = false; }
-            else if (t.startsWith('□')) { isExample = t.includes('예제') || t.includes('예시'); html += `<div class="desc-section-title">${t.replace('□','').trim()}</div>`; }
-            else if (isExample) { html += `<div class="example-box">${t}</div>`; }
-            else if (t) { html += `<div class="desc-text">${t}</div>`; }
-        });
-        return html;
-    }
+    function smartFormatDesc(text) { if (!text) return ""; let html = "", isExample = false; text.split('\n').forEach(line => { let t = line.trim(); if (/<table|<tr|<td|<th|<\/table|<\/tr|<\/td|<\/th>/.test(t)) { html += t; isExample = false; } else if (t.startsWith('□')) { isExample = t.includes('예제') || t.includes('예시'); html += `<div class="desc-section-title">${t.replace('□','').trim()}</div>`; } else if (isExample) { html += `<div class="example-box">${t}</div>`; } else if (t) { html += `<div class="desc-text">${t}</div>`; } }); return html; }
     initApp();
 </script>
 
-<!-- 새로운 기능 추가 영역 (기존 코드의 변수와 함수를 활용하여 하단에 삽입) -->
+<!-- 확장 기능: 초기화 로직 보완 -->
 <style>
-    .btn-reset-all { 
-        background: none; border: none; color: #cc4125; cursor: pointer; 
-        font-size: 10px; font-weight: bold; margin-left: 10px; 
-    }
-    .btn-reset-all:hover { text-decoration: underline; }
-    .cat-reset-icon { 
-        float: right; margin-right: 10px; color: #555; cursor: pointer; font-size: 10px; transition: transform 0.3s ease;
-    }
+    .btn-reset-all { background: none; border: none; color: #cc4125; cursor: pointer; font-size: 10px; font-weight: bold; margin-left: 10px; }
+    .cat-reset-icon { float: right; margin-right: 10px; color: #555; cursor: pointer; font-size: 10px; transition: transform 0.3s ease; }
     .cat-reset-icon:hover { color: #007acc; transform: rotate(-180deg); }
 </style>
-
 <script>
-    // 1. 기존 resetCurrentCode 함수 덮어쓰기 (정답 기록 삭제 기능 포함)
-    const oldResetCurrentCode = resetCurrentCode;
+    // 1. 개별 문제 초기화 (서버 동기화 강화)
+    const oldReset = resetCurrentCode;
     resetCurrentCode = async function() {
         if(currentIdx === -1) return;
         const p = problems.find(x => x.id === currentIdx);
         if(!p) return;
-        
         if(confirm(`[${p.title}] 문제의 코드와 정답 기록을 모두 초기화하시겠습니까?`)) {
-            // 로컬 코드 삭제
             localStorage.removeItem(getSaveKey(currentIdx));
             editor.setValue(p.initial || "");
-            
-            // 로컬 solvedIds에서 제거
             solvedIds = solvedIds.filter(id => id !== currentIdx);
-            
-            // 서버에 정답 취소 요청 (action=delete 추가 활용)
-            try {
-                await fetch(`${MASTER_CLOUD_URL}?action=delete&name=${encodeURIComponent(currentUser)}&id=${currentIdx}`);
-            } catch(e) {}
-            
             renderList();
-            document.getElementById('output').innerText = "해당 문제의 기록이 초기화되었습니다.";
+            try { 
+                // 서버 삭제 요청 완료까지 대기
+                await fetch(`${MASTER_CLOUD_URL}?action=delete&name=${encodeURIComponent(currentUser)}&id=${currentIdx}`);
+            } catch(e) { console.error(e); }
+            document.getElementById('output').innerText = "초기화 되었습니다.";
         }
     };
 
-    // 2. 회차(카테고리)별 초기화 기능
+    // 2. 회차별 초기화
     async function resetCategoryProgress(mainCat, subCat) {
         if(!confirm(`[${subCat}] 회차의 모든 정답 기록과 작성한 코드를 초기화하시겠습니까?`)) return;
-        
+        document.getElementById('loader').style.display='flex'; // 초기화 중 로딩 표시
         const targets = problems.filter(p => p.mainCat === mainCat && p.subCat === subCat);
         for(let p of targets) {
             localStorage.removeItem(getSaveKey(p.id));
             solvedIds = solvedIds.filter(id => id !== p.id);
-            try {
-                await fetch(`${MASTER_CLOUD_URL}?action=delete&name=${encodeURIComponent(currentUser)}&id=${p.id}`);
-            } catch(e) {}
+            try { await fetch(`${MASTER_CLOUD_URL}?action=delete&name=${encodeURIComponent(currentUser)}&id=${p.id}`); } catch(e) {}
         }
-        
         const curProb = problems.find(x => x.id === currentIdx);
-        if(curProb && curProb.mainCat === mainCat && curProb.subCat === subCat) {
-            editor.setValue(curProb.initial || "");
-        }
-        
+        if(curProb && curProb.mainCat === mainCat && curProb.subCat === subCat) editor.setValue(curProb.initial || "");
         renderList();
-        alert(`[${subCat}] 회차가 초기화되었습니다.`);
+        document.getElementById('loader').style.display='none';
+        alert(`[${subCat}] 초기화 완료`);
     }
 
-    // 3. 전체 진행 내역 초기화 기능
+    // 3. 전체 초기화 (가장 중요: 서버 deleteAll 요청)
     async function resetAllProgress() {
         if(!confirm("⚠️ 경고: 모든 문제의 정답 기록과 작성한 코드가 영구적으로 삭제됩니다. 계속하시겠습니까?")) return;
-        
-        for(let p of problems) {
-            localStorage.removeItem(getSaveKey(p.id));
-        }
+        document.getElementById('loader').style.display='flex';
+        problems.forEach(p => localStorage.removeItem(getSaveKey(p.id)));
         solvedIds = [];
-        
-        try {
+        try { 
+            // 서버에 전체 삭제 요청 (action=deleteAll)
             await fetch(`${MASTER_CLOUD_URL}?action=deleteAll&name=${encodeURIComponent(currentUser)}`);
-        } catch(e) {}
-        
+        } catch(e) { console.error(e); }
         if(currentIdx !== -1) {
             const p = problems.find(x => x.id === currentIdx);
             editor.setValue(p ? p.initial : "");
         }
-        
         renderList();
-        alert("모든 데이터가 초기화되었습니다.");
+        document.getElementById('loader').style.display='none';
+        alert("전체 데이터가 초기화되었습니다.");
     }
 
-    // 4. UI 요소를 동적으로 삽입 (renderList 덮어쓰기)
-    const oldRenderListFunc = renderList;
+    const oldRender = renderList;
     renderList = function() {
-        oldRenderListFunc(); // 기존 렌더링 실행
-        
-        // 회차 헤더에 초기화 아이콘 삽입
+        oldRender();
         document.querySelectorAll('.sub-cat-header').forEach(header => {
             if (!header.querySelector('.cat-reset-icon')) {
                 const subName = header.innerText.trim();
@@ -567,22 +481,15 @@
                 if (prob) {
                     const icon = document.createElement('i');
                     icon.className = 'fas fa-sync-alt cat-reset-icon';
-                    icon.title = '이 회차 전체 초기화';
-                    icon.onclick = (e) => {
-                        e.stopPropagation();
-                        resetCategoryProgress(prob.mainCat, prob.subCat);
-                    };
+                    icon.onclick = (e) => { e.stopPropagation(); resetCategoryProgress(prob.mainCat, prob.subCat); };
                     header.appendChild(icon);
                 }
             }
         });
-
-        // 성취도 영역 옆에 전체 초기화 버튼 추가
         const statsArea = document.getElementById('progress-stats');
         if (statsArea && !document.getElementById('all-reset-btn')) {
             const btn = document.createElement('button');
-            btn.id = 'all-reset-btn';
-            btn.className = 'btn-reset-all';
+            btn.id = 'all-reset-btn'; btn.className = 'btn-reset-all';
             btn.innerHTML = '<i class="fas fa-history"></i> 전체초기화';
             btn.onclick = resetAllProgress;
             statsArea.appendChild(btn);
