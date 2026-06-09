@@ -1,4 +1,4 @@
-<!-- v12.1 - 정답 판정 로직 수정 버전 + 초기화 기능 확장 -->
+<!-- v12.2 - 정답 판정 로직 수정 + 초기화 기능 및 엔터키 로그인 보완 버전 -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -79,7 +79,8 @@
 <div id="login-screen" class="overlay">
     <div style="background:#252526; padding:40px; border-radius:15px; width:300px; text-align:center; border:1px solid #444;">
         <h2 style="color:white; margin-bottom:20px;">코드:앤 파이썬 스튜디오</h2>
-        <input type="text" id="user-name" class="admin-input" style="width:100%; padding:12px; box-sizing:border-box; text-align:center;" placeholder="학생 이름 입력" onkeypress="if(event.keyCode==13) login()">
+        <!-- 엔터키 인식 개선: onkeydown 사용 -->
+        <input type="text" id="user-name" class="admin-input" style="width:100%; padding:12px; box-sizing:border-box; text-align:center;" placeholder="학생 이름 입력" onkeydown="if(event.key === 'Enter') login()">
         <button onclick="login()" style="width:100%; background:#007acc; color:white; border:none; padding:12px; cursor:pointer; font-weight:bold; border-radius:4px; margin-top:5px;">학습 시작</button>
     </div>
 </div>
@@ -470,7 +471,7 @@
     initApp();
 </script>
 
-<!-- 여기서부터 확장 기능 영역 -->
+<!-- 새로운 기능 추가 영역 (기존 코드의 변수와 함수를 활용하여 하단에 삽입) -->
 <style>
     .btn-reset-all { 
         background: none; border: none; color: #cc4125; cursor: pointer; 
@@ -484,60 +485,81 @@
 </style>
 
 <script>
-    // 1. 기존 resetCurrentCode 함수 덮어쓰기 (정답 기록 삭제 기능 추가)
-    const oldResetCode = resetCurrentCode;
+    // 1. 기존 resetCurrentCode 함수 덮어쓰기 (정답 기록 삭제 기능 포함)
+    const oldResetCurrentCode = resetCurrentCode;
     resetCurrentCode = async function() {
         if(currentIdx === -1) return;
         const p = problems.find(x => x.id === currentIdx);
         if(!p) return;
+        
         if(confirm(`[${p.title}] 문제의 코드와 정답 기록을 모두 초기화하시겠습니까?`)) {
+            // 로컬 코드 삭제
             localStorage.removeItem(getSaveKey(currentIdx));
             editor.setValue(p.initial || "");
+            
+            // 로컬 solvedIds에서 제거
             solvedIds = solvedIds.filter(id => id !== currentIdx);
+            
+            // 서버에 정답 취소 요청 (action=delete 추가 활용)
             try {
                 await fetch(`${MASTER_CLOUD_URL}?action=delete&name=${encodeURIComponent(currentUser)}&id=${currentIdx}`);
             } catch(e) {}
+            
             renderList();
-            document.getElementById('output').innerText = "기록이 초기화되었습니다.";
+            document.getElementById('output').innerText = "해당 문제의 기록이 초기화되었습니다.";
         }
     };
 
-    // 2. 회차별 초기화 함수
+    // 2. 회차(카테고리)별 초기화 기능
     async function resetCategoryProgress(mainCat, subCat) {
         if(!confirm(`[${subCat}] 회차의 모든 정답 기록과 작성한 코드를 초기화하시겠습니까?`)) return;
+        
         const targets = problems.filter(p => p.mainCat === mainCat && p.subCat === subCat);
         for(let p of targets) {
             localStorage.removeItem(getSaveKey(p.id));
             solvedIds = solvedIds.filter(id => id !== p.id);
-            try { await fetch(`${MASTER_CLOUD_URL}?action=delete&name=${encodeURIComponent(currentUser)}&id=${p.id}`); } catch(e) {}
+            try {
+                await fetch(`${MASTER_CLOUD_URL}?action=delete&name=${encodeURIComponent(currentUser)}&id=${p.id}`);
+            } catch(e) {}
         }
+        
         const curProb = problems.find(x => x.id === currentIdx);
         if(curProb && curProb.mainCat === mainCat && curProb.subCat === subCat) {
             editor.setValue(curProb.initial || "");
         }
+        
         renderList();
         alert(`[${subCat}] 회차가 초기화되었습니다.`);
     }
 
-    // 3. 전체 초기화 함수
+    // 3. 전체 진행 내역 초기화 기능
     async function resetAllProgress() {
         if(!confirm("⚠️ 경고: 모든 문제의 정답 기록과 작성한 코드가 영구적으로 삭제됩니다. 계속하시겠습니까?")) return;
-        problems.forEach(p => localStorage.removeItem(getSaveKey(p.id)));
+        
+        for(let p of problems) {
+            localStorage.removeItem(getSaveKey(p.id));
+        }
         solvedIds = [];
-        try { await fetch(`${MASTER_CLOUD_URL}?action=deleteAll&name=${encodeURIComponent(currentUser)}`); } catch(e) {}
+        
+        try {
+            await fetch(`${MASTER_CLOUD_URL}?action=deleteAll&name=${encodeURIComponent(currentUser)}`);
+        } catch(e) {}
+        
         if(currentIdx !== -1) {
             const p = problems.find(x => x.id === currentIdx);
             editor.setValue(p ? p.initial : "");
         }
+        
         renderList();
-        alert("전체 데이터가 초기화되었습니다.");
+        alert("모든 데이터가 초기화되었습니다.");
     }
 
-    // 4. UI 요소를 동적으로 삽입하기 위해 renderList 덮어쓰기
-    const oldRenderList = renderList;
+    // 4. UI 요소를 동적으로 삽입 (renderList 덮어쓰기)
+    const oldRenderListFunc = renderList;
     renderList = function() {
-        oldRenderList(); 
-        // 회차 헤더에 아이콘 추가
+        oldRenderListFunc(); // 기존 렌더링 실행
+        
+        // 회차 헤더에 초기화 아이콘 삽입
         document.querySelectorAll('.sub-cat-header').forEach(header => {
             if (!header.querySelector('.cat-reset-icon')) {
                 const subName = header.innerText.trim();
@@ -546,16 +568,21 @@
                     const icon = document.createElement('i');
                     icon.className = 'fas fa-sync-alt cat-reset-icon';
                     icon.title = '이 회차 전체 초기화';
-                    icon.onclick = (e) => { e.stopPropagation(); resetCategoryProgress(prob.mainCat, prob.subCat); };
+                    icon.onclick = (e) => {
+                        e.stopPropagation();
+                        resetCategoryProgress(prob.mainCat, prob.subCat);
+                    };
                     header.appendChild(icon);
                 }
             }
         });
-        // 하단에 전체 초기화 버튼 추가
+
+        // 성취도 영역 옆에 전체 초기화 버튼 추가
         const statsArea = document.getElementById('progress-stats');
         if (statsArea && !document.getElementById('all-reset-btn')) {
             const btn = document.createElement('button');
-            btn.id = 'all-reset-btn'; btn.className = 'btn-reset-all';
+            btn.id = 'all-reset-btn';
+            btn.className = 'btn-reset-all';
             btn.innerHTML = '<i class="fas fa-history"></i> 전체초기화';
             btn.onclick = resetAllProgress;
             statsArea.appendChild(btn);
