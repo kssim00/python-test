@@ -1619,7 +1619,8 @@ async function syncFromSheet(){
       try{ customMissions=JSON.parse(data.missions); try{localStorage.setItem('eg_admin_missions',data.missions);}catch(e){} synced.push('미션 단계'); }catch(e){}
     }
     if(synced.length > 0){
-      renderAdminList();
+      renderGallery();
+      if(document.getElementById('adminView').classList.contains('active')) renderAdminList();
       showToast('✅ ' + synced.join(' + ') + ' 불러오기 완료!');
     } else {
       showToast('⚠️ 시트에 아직 데이터가 없어요. 스프레드시트 [🎓 코딩학원] 메뉴에서 동기화를 먼저 실행하세요.');
