@@ -1603,20 +1603,21 @@ async function pushAllMissionsToSheet(){
   if(!APPS_SCRIPT_URL) return;
   try{
     const all = MISSIONS.map(m=>getMissionData(m.id));
-    // 대용량 데이터는 POST로 전송
-    const res = await fetch(APPS_SCRIPT_URL+'?action=saveMissions&type=entry', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(all)
-    });
-    const data = await res.json();
-    if(data.ok){
-      _missionSourceIsSheet = true;
-      showToast('📋 시트에 미션 '+all.length+'개 저장 완료!');
-      console.log('[시트] '+all.length+'개 미션 시트에 저장');
-    } else {
-      showToast('❌ 시트 저장 실패');
+    // 1) 시트 초기화
+    await fetch(APPS_SCRIPT_URL+'?action=clearMissions&type=entry&t='+Date.now());
+    // 2) 2개씩 나눠서 GET으로 전송 (URL 길이 제한 우회)
+    const CHUNK = 2;
+    for(let i=0; i<all.length; i+=CHUNK){
+      const chunk = all.slice(i, i+CHUNK);
+      const url = APPS_SCRIPT_URL+'?action=appendMissions&type=entry'
+        +'&missions='+encodeURIComponent(JSON.stringify(chunk))
+        +'&t='+Date.now();
+      await fetch(url);
+      showToast('📋 동기화 중... '+(i+chunk.length)+'/'+all.length, 800);
     }
+    _missionSourceIsSheet = true;
+    showToast('📋 시트 동기화 완료! 잠시 후 새로고침하세요');
+    console.log('[시트] '+all.length+'개 미션 전송 완료');
   }catch(e){ showToast('❌ 시트 저장 실패: '+e.message); console.log(e); }
 }
 
