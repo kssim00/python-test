@@ -917,6 +917,7 @@ body { background:#FAFAFA !important; }
           <button class="admin-export-btn" onclick="exportAll()">📥 scratch_data.json 내보내기</button>
           <button class="admin-export-btn" onclick="openBulkVideoUpload()" style="background:rgba(14,165,233,0.15);border-color:rgba(14,165,233,0.4);color:var(--teal);">🎬 동영상 일괄 업로드</button>
           <button class="admin-import-btn" onclick="document.getElementById('importFileInput').click()">📤 전체 불러오기</button>
+          <button class="admin-export-btn" id="sheetSyncBtn" onclick="syncFromSheet()" style="background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.4);color:#16A34A;" title="스프레드시트 시트3에서 미션 단계를 불러옵니다">🔄 시트에서 불러오기</button>
           <button class="admin-close-btn" onclick="closeAdmin()">← 갤러리로</button>
         </div>
       </div>
@@ -1590,6 +1591,36 @@ async function loadAdminFromCloud(){
       try{ localStorage.setItem('sg_admin_links',    data.links);    }catch(e){}
     }
   }catch(e){ console.log('관리자 데이터 로드 실패:', e); }
+}
+// 스프레드시트 시트3 동기화 후 강제 로드
+async function syncFromSheet(){
+  if(!APPS_SCRIPT_URL){
+    showToast('⚠️ Apps Script URL이 설정되지 않았어요. 관리자 설정을 확인하세요.'); return;
+  }
+  const btn = document.getElementById('sheetSyncBtn');
+  if(btn){ btn.textContent='⏳ 불러오는 중...'; btn.disabled=true; }
+  try{
+    // localStorage 미션 캐시 삭제 → 클라우드에서 강제 로드
+    try{ localStorage.removeItem('sg_admin_missions'); }catch(e){}
+    const res = await fetch(APPS_SCRIPT_URL+'?action=readAdmin&type=scratch&t='+Date.now());
+    const data = await res.json();
+    if(!data.found){ showToast('⚠️ 관리자 설정을 찾을 수 없어요. 스프레드시트에서 먼저 [🔄 스크래치 미션 단계 동기화]를 실행하세요.'); return; }
+    if(data.missions && data.missions!=='{}'){
+      try{
+        customMissions = JSON.parse(data.missions);
+        try{ localStorage.setItem('sg_admin_missions', data.missions); }catch(e){}
+        renderAdminList(); // 관리자 목록 새로고침
+        showToast('✅ 시트에서 미션 단계를 불러왔어요!');
+      }catch(e){ showToast('⚠️ 데이터 파싱 오류: '+e.message); }
+    } else {
+      showToast('⚠️ 시트에 아직 미션 데이터가 없어요. 스프레드시트에서 [🔄 스크래치 미션 단계 동기화]를 먼저 실행하세요.');
+    }
+  }catch(e){
+    showToast('⚠️ 불러오기 실패: 인터넷 연결이나 URL을 확인하세요.');
+    console.log('syncFromSheet 오류:', e);
+  } finally {
+    if(btn){ btn.textContent='🔄 시트에서 불러오기'; btn.disabled=false; }
+  }
 }
 async function saveAllAdminToCloud(){
   if(!APPS_SCRIPT_URL) return;
