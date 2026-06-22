@@ -860,7 +860,6 @@ body { background:#FAFAFA !important; }
         <button class="admin-trigger" id="adminTriggerBtn" onclick="toggleAdminMenu()" title="관리자">⚙️</button>
         <div id="adminDropdown" style="display:none;position:absolute;right:0;top:40px;background:var(--card);border:1.5px solid var(--border2);border-radius:14px;box-shadow:0 8px 28px rgba(79,110,247,0.18);z-index:9999;min-width:180px;overflow:hidden;">
           <button onclick="closeAdminMenu();openAdmin()" style="display:block;width:100%;text-align:left;padding:13px 18px;background:none;border:none;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:var(--text);cursor:pointer;border-bottom:1px solid var(--border);">✏️ 미션 편집</button>
-          <button onclick="closeAdminMenu();adminSyncToSheet()" style="display:block;width:100%;text-align:left;padding:13px 18px;background:none;border:none;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:var(--teal);cursor:pointer;border-bottom:1px solid var(--border);">📋 구글 시트 동기화</button>
           <button onclick="closeAdminMenu();logoutAdmin()" style="display:block;width:100%;text-align:left;padding:13px 18px;background:none;border:none;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:#DC2626;cursor:pointer;">🔓 관리자 종료</button>
         </div>
       </div>
@@ -942,7 +941,6 @@ body { background:#FAFAFA !important; }
   <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);letter-spacing:0.06em;margin-right:4px;">🔐 관리자</span>
   <div style="width:1px;height:16px;background:rgba(255,255,255,0.25);margin:0 4px;"></div>
   <button onclick="openAdmin()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:8px;color:#fff;font-size:12px;font-family:'Noto Sans KR',sans-serif;padding:5px 12px;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">✏️ 미션 편집</button>
-  <button onclick="adminSyncToSheet()" style="background:rgba(0,180,140,0.25);border:1px solid rgba(0,220,170,0.4);border-radius:8px;color:#fff;font-size:12px;font-family:'Noto Sans KR',sans-serif;padding:5px 12px;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(0,180,140,0.4)'" onmouseout="this.style.background='rgba(0,180,140,0.25)'">📋 시트 동기화</button>
   <button onclick="logoutAdmin()" style="background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:rgba(255,255,255,0.8);font-size:12px;font-family:'Noto Sans KR',sans-serif;padding:5px 12px;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='rgba(0,0,0,0.35)'" onmouseout="this.style.background='rgba(0,0,0,0.2)'">🔓 종료</button>
 </div>
 
@@ -1573,73 +1571,6 @@ function loadFromJSON(){
     .catch(()=>{ console.log('ℹ️ entry_data.json 없음 — localStorage 사용'); return false; });
 }
 function saveCustomMissions(){ try{localStorage.setItem('eg_admin_missions',JSON.stringify(customMissions));}catch(e){} saveAllAdminToCloud(); }
-// ══════════════════════════════════════════
-//  구글 시트 ↔ 미션 데이터 동기화
-// ══════════════════════════════════════════
-let _missionSourceIsSheet = false; // 시트에서 미션을 불러왔을 때 true
-
-// 시트에서 미션 목록 불러오기 (앱 초기화 시 호출)
-async function loadMissionsFromSheet(){
-  if(!APPS_SCRIPT_URL) return;
-  try{
-    const res  = await fetch(APPS_SCRIPT_URL+'?action=getMissions&type=entry&t='+Date.now());
-    const data = await res.json();
-    if(data.found && data.missions && data.missions.length > 0){
-      // id를 숫자로 정규화
-      MISSIONS = data.missions.map(m=>Object.assign(m,{id:Number(m.id),diff:Number(m.diff)||1,xp:Number(m.xp)||10}));
-      _missionSourceIsSheet = true;
-      renderGallery(); calcProgress(); updateTopbar();
-      console.log('[시트] 미션 '+MISSIONS.length+'개 로드 완료');
-    } else if(data.found && data.missions && data.missions.length === 0){
-      // 시트 있지만 비어있음 → 현재 미션을 시트에 최초 등록
-      await pushAllMissionsToSheet();
-    }
-    // found=false: 시트 미존재 → 기본값 유지
-  }catch(e){ console.log('[시트] 미션 로드 실패 (기본값 사용):', e); }
-}
-
-// 현재 MISSIONS 전체를 시트에 일괄 저장 (최초 세팅 또는 수동 동기화)
-async function pushAllMissionsToSheet(){
-  if(!APPS_SCRIPT_URL) return;
-  try{
-    const all = MISSIONS.map(m=>getMissionData(m.id));
-    // 1) 시트 초기화
-    await fetch(APPS_SCRIPT_URL+'?action=clearMissions&type=entry&t='+Date.now());
-    // 2) 2개씩 나눠서 GET으로 전송 (URL 길이 제한 우회)
-    const CHUNK = 2;
-    for(let i=0; i<all.length; i+=CHUNK){
-      const chunk = all.slice(i, i+CHUNK);
-      const url = APPS_SCRIPT_URL+'?action=appendMissions&type=entry'
-        +'&missions='+encodeURIComponent(JSON.stringify(chunk))
-        +'&t='+Date.now();
-      await fetch(url);
-      showToast('📋 동기화 중... '+(i+chunk.length)+'/'+all.length, 800);
-    }
-    _missionSourceIsSheet = true;
-    showToast('📋 시트 동기화 완료! 잠시 후 새로고침하세요');
-    console.log('[시트] '+all.length+'개 미션 전송 완료');
-  }catch(e){ showToast('❌ 시트 저장 실패: '+e.message); console.log(e); }
-}
-
-// 단일 미션을 시트에 반영 (관리자 편집 저장 시 호출)
-function syncMissionToSheet(id){
-  if(!APPS_SCRIPT_URL) return;
-  try{
-    const m = getMissionData(id);
-    const url = APPS_SCRIPT_URL
-      +'?action=updateMission&type=entry'
-      +'&mission='+encodeURIComponent(JSON.stringify(m))
-      +'&t='+Date.now();
-    fetch(url).catch(()=>{});
-  }catch(e){}
-}
-
-// 관리자 패널: 수동 전체 동기화 버튼
-async function adminSyncToSheet(){
-  if(!confirm('현재 모든 미션을 구글 시트에 동기화할까요?')) return;
-  showToast('📋 동기화 중...', 2000);
-  await pushAllMissionsToSheet();
-}
 async function loadAdminFromCloud(){
   if(!APPS_SCRIPT_URL) return;
   try{
@@ -1685,9 +1616,6 @@ function getYoutubeThumbnail(url){
   return id?`https://img.youtube.com/vi/${id}/maxresdefault.jpg`:null;
 }
 function getMissionData(id){
-  // 시트 미션이 로드된 경우 우선 사용
-  const sheetM = MISSIONS.find(m=>m.id===id);
-  if(sheetM && _missionSourceIsSheet) return Object.assign({}, sheetM, customMissions[id]||{});
   const base=MISSIONS.find(m=>m.id===id)||{};
   const custom=customMissions[id]||{};
   return Object.assign({},base,custom);
@@ -2040,7 +1968,6 @@ function saveMissionEdit(){
   };
   Object.keys(customMissions[id]).forEach(k=>{ if(customMissions[id][k]===undefined) delete customMissions[id][k]; });
   saveCustomMissions();
-  syncMissionToSheet(id);
   // 유튜브 링크 저장
   const ytVal=document.getElementById('editYoutubeLink').value.trim();
   if(ytVal){entryLinks[id]=ytVal;}else{delete entryLinks[id];}
@@ -2054,7 +1981,7 @@ function resetMissionEdit(){
   if(!editingMissionId) return;
   if(!confirm('기본값으로 되돌릴까요?')) return;
   delete customMissions[editingMissionId];
-  saveCustomMissions(); syncMissionToSheet(editingMissionId); renderAdminList();
+  saveCustomMissions(); renderAdminList();
   openMissionEdit(editingMissionId);
   showToast('↩️ 기본값으로 초기화됨');
 }
@@ -2249,7 +2176,6 @@ function initApp(){
     loadFromGoogleSheets()
   ]).then(async ()=>{
     await loadAdminFromCloud();
-    await loadMissionsFromSheet();
     await loadFromCloud();
     updateTopbar();
     // 미션 상세보기 중이면 갤러리로 강제 이동하지 않음
