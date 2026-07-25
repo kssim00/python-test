@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COS Pro 기출 문제 풀이 - AI 과외 선생님</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/skulpt/1.2.0/skulpt.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/skulpt/1.2.0/skulpt-stdlib.js"></script>
+</head>
+<body>
+<script>
+/* 게시 용량 제한을 넘지 않도록 CSS·화면·앱 코드가 gzip으로 압축되어 있습니다. (v34)
+   브라우저 내장 DecompressionStream으로 풀어서 실행합니다. */
+window.addEventListener('DOMContentLoaded', () => { (async () => {
+  try {
+    if (typeof DecompressionStream === 'undefined') throw new Error('old-browser');
+    const el = document.getElementById('appgz');
+    if (!el) throw new Error('appgz-not-found');
+    const b64 = el.textContent.replace(/\s+/g, '');
+    const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    const text = await new Response(stream).text();
+    const parts = text.split('\u0001');
+    const st = document.createElement('style'); st.textContent = parts[0]; document.head.appendChild(st);
+    document.getElementById('approot').innerHTML = parts[1];
+    (0, eval)(parts[2]);
+  } catch (e) {
+    document.body.insertAdjacentHTML('afterbegin',
+      '<div style="background:#7f1d1d;color:#fff;padding:12px 16px;font-size:15px">' +
+      '⚠️ 앱을 불러오지 못했어요. 최신 브라우저(크롬/엣지/사파리)로 열어 주세요. (' + e.message + ')</div>');
+  }
+})(); });
+</script>
+<div id="approot"></div>
+<textarea id="appgz" style="display:none">
